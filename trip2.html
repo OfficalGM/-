@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link href="css/metro-schemes.css" rel="stylesheet">
+    <link href="css/metro-responsive.css" rel="stylesheet">
+    <link href="css/metro.css" rel="stylesheet">
+    <link href="css/metro-icons.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="js/metro.js"></script>
+    <script src="js.cookie.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Jhenghei", sans-serif;
+            background-color: #2e80ab;
+        }
+        
+        .v-menu li a {
+            min-width: 10rem;
+        }
+        
+        .v-menu li {
+            min-width: 10rem;
+        }
+        
+        .page-content {
+            padding-top: 3.125rem;
+            min-height: 100%;
+            height: 100%;
+        }
+        
+        .table .input-control.checkbox {
+            line-height: 1;
+            min-height: 0;
+            height: auto;
+        }
+        
+        .tile {
+            width: 230px;
+            height: 230px;
+            margin-top: 40px;
+        }
+        
+        .tile-content.iconic .icon {
+            font-size: 100px;
+            margin-left: -54px;
+            margin-top: -50px;
+        }
+        .content2 {
+            float: left;
+            width: 15%;
+            left: 15%;
+            height: 100%;
+            color: #fff;
+            background-color: #333;
+        }
+        #trip,
+        #sleep {
+            margin-top: 7px;
+            margin-left: 10px;
+        }
+        .tagtitle {
+            width: 70%;
+            border-bottom: 1px solid #ccc;
+            margin: 0 auto;
+            margin-top: 3%;
+            text-align: center;
+            padding-bottom: 5px;
+            color: white;
+        }
+        .Tx {
+            position: absolute;
+            font-size: 1.8rem;
+            left: 20%;
+            top: 65%;
+            text-align: center;
+        }
+        
+        @media screen and (max-width: 800px) {
+            #cell-sidebar {
+                flex-basis: 52px;
+            }
+            #cell-content {
+                flex-basis: calc(100% - 52px);
+            }
+        }
+    </style>
+    <script>
+    var trip,trip_final,dur,go;
+    var Ri=1;
+    $(document).ready(function() {
+         var member=Cookies.get('user');
+         var user=document.getElementById('member')
+         var memberHtml="";
+         if(member!="test"){
+                 memberHtml+="<span class='dropdown-toggle'><span class=mif-user></span>"+member+ "</span><div class='app-bar-drop-container padding10 place-right no-margin-top block-shadow fg-dark' data-role=dropdown data-no-close=true style=width: 100px;> <ul class='unstyled-list fg-dark'><li><a href=# class='fg-white fg-hover-yellow'>變更密碼</a></li><li><a onclick=Logout() class='fg-white fg-hover-yellow'>登出</a></li></ul></div>"
+         }
+         else{
+             memberHtml+="<span class='dropdown-toggle active-toggle'><span class=mif-user></span>試用者</span>"
+         }
+        user.innerHTML=memberHtml
+          var decodedCookie=decodeURIComponent(document.cookie);
+          var ca=decodedCookie.split(";")
+          console.log(ca)
+          go=Cookies.get('go')
+          //查詢天氣並存
+          switch(go){
+              case "台北":
+                  $.ajax({
+                    url:"GetWeather.php",
+                    data:"&loc=台北",
+                    dataType:"json",
+                    type:'post',
+                    success:function(data){
+                        Cookies.set('weather',data) 
+                    }
+                });
+                break;
+              case "台中":
+                 $.ajax({
+                    url:"GetWeather.php",
+                    data:"&loc=台中",
+                    dataType:"json",
+                    type:'post',
+                    success:function(data){
+                        Cookies.set('weather',data) 
+                    }
+                });
+                break;
+              case "高雄":
+                 $.ajax({
+                    url:"GetWeather.php",
+                    data:"&loc=高雄",
+                    dataType:"json",
+                    type:'post',
+                    success:function(data){
+                        Cookies.set('weather',data)         
+                    }
+                });
+                break;
+          }
+          dur=Cookies.get('dur')
+          console.log(dur)
+          trip=Cookies.getJSON('trip')
+          console.log("trip",trip)
+          var y=document.getElementById("trip");
+          for(var i=0;i<trip.length;i++){
+               y.innerHTML+="<a class='button danger' style=margin-right:7px; onclick=add_trip('"+trip[i]+"') id="+trip[i]+">"+trip[i]+"</a>"
+          }
+          arrage()
+           
+       });
+       function toHexString(r,g,b) {
+        return ("00000" + (r << 16 | g << 8 | b).toString(16)).slice(-6);
+        }
+       
+       function add_trip(id){   
+          var str=document.getElementById(id).style.background.split(",")[1]
+          var hex= toHexString(str, str, str);
+          var name=document.getElementsByTagName("tr");
+          if(name.length<=8&&name.length>0){
+              if(hex!="cccccc"){
+                    if(dur==1){
+                        var selectTime="<div class='input-control select'><select  class=AA><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> <option>6</option><option>7</option><option>8</option></select></div>"
+                        var x=document.getElementById("table").insertRow(Ri);
+                        Ri++;
+                        var a=x.insertCell(0)
+                        var b=x.insertCell(1)
+                        var c=x.insertCell(2)
+                        a.innerHTML=go
+                        b.innerHTML=id
+                        c.innerHTML=selectTime
+                    
+                    }
+                    else{
+                        var x=document.getElementById("table").insertRow(Ri);
+                        var selectTime="<div class='input-control select'><select  class=AA><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> <option>6</option><option>7</option><option>8</option></select></div>"
+                        var selectTime2="<div class='input-control select'><select class=BB><option>住宿</option><option>景點</option></select></div>" 
+                        Ri++;
+                        var a=x.insertCell(0)
+                        var b=x.insertCell(1)
+                        var c=x.insertCell(2)
+                        var d=x.insertCell(3)
+                        a.innerHTML=go
+                        b.innerHTML=id
+                        c.innerHTML=selectTime
+                        d.innerHTML=selectTime2
+                    }
+                    document.getElementById(id).style.background="#CCCCCC"
+                    document.getElementById(id).style.border="#CCCCCC"
+          }
+          else{
+              document.getElementById(id).style.background="#ce352c"
+              document.getElementById(id).style.border="#ce352c"
+              var name=document.getElementsByTagName("tr");
+              Ri--;
+              
+              for(var j=0;j<name.length;j++){
+                  if(id==name[j].outerText.split('	')[1]){
+                       var x=document.getElementById("table").deleteRow(j-1); 
+                  }
+              }
+          }
+        }
+        else{
+            $.Notify({
+    			caption: '數量超過',
+    			content: '請重新選擇',
+				timeout:3000,
+    			type: 'alert'
+			});
+        }
+          
+    }
+    function arrage(){
+           var start=Cookies.get('StartTime')
+           var startstation=Cookies.get('StartStation')
+           var startstation2=Cookies.get('StartStation2')
+           var endstation=Cookies.get('EndStation')
+           var endstation2=Cookies.get('EndStation2')
+           var Time=Cookies.get('Time')
+           var x=document.getElementById("cell-content"); 
+           var transportation,transportation3;
+           var transportation1=Cookies.get('transportation1')
+           if(transportation1=="hightrain")
+                transportation="高鐵"
+           else{
+               transportation="台鐵"
+           }
+           var transportation4=Cookies.get('transportation2')
+           if(transportation4=="hightrain")
+                transportation3="高鐵"
+           else{
+               transportation3="台鐵"
+           }
+           var selectTime3="<div class='input-control select'><select id=sleep><option>6:00</option><option>7:00</option><option>8:00</option><option>9:00</option><option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option><option>19:00</option><option>20:00</option><option>21:00</option><option>22:00</option><option>23:00</option></select></div>"
+           console.log(transportation3)
+           var time=Cookies.get('Time2')
+           if (dur==1){
+                var Html="<h1 class='text-light margin20 fg-white'>第1天<a class='button danger' onclick=next_day(1)><span class=mif-next></span>下一步</a></h1><hr class='thin bg-white'>"
+                Html+="<div style=background-color:#fff><table class='table border bordered hovered' ><thead><tr><th>地點</th><th>景點</th><th>請選擇待的時間</th></tr></thead><tbody id=table><tr>"
+                Html+="<td>起程"+transportation+"</td><td>"+"搭"+startstation+transportation+"至"+startstation2+transportation+"</td><td>"+Time+"</td></tr>"
+                Html+="<tr><td>回程"+transportation3+"</td><td>搭"+endstation+transportation3+endstation2+transportation3+"</td><td>"+time+"</td></tr>"
+           }
+           
+           else{
+                var Html="<h1 class='text-light margin20 fg-white'>第1天<a class='button danger' onclick=next_day(2)><span class=mif-next></span>下一天</a></h1><hr class='thin bg-white'>"
+                Html+="<div style=background-color:#fff><table class='table border bordered hovered'><thead><tr><th>地點</th><th>景點</th><th>請選擇待的時間</th><th>請選擇今日睡覺的地方</th></tr></thead><tbody id=table><tr>"
+                Html+="<td>"+transportation+"</td><td>"+"搭"+startstation+transportation+"至"+startstation2+transportation+"</td><td>"+Time+"</td><td>"+"</td></tr>"
+                Html+="<td>"+go+"</td><td>今天結束時間</td><td>"+selectTime3+"</td><td></td></tr>"
+           }
+           x.innerHTML=Html;
+          
+          
+    }
+    var dur2=1;var end=[],trip5=[],trip6=[],trip7=[];
+    function next_day(id){
+           var start=GetLoc(Cookies.get('transportation1'),Cookies.get('StartStation2'),Cookies.get('StartStation'),Cookies.get('Time'),1); 
+           var end=GetLoc2(Cookies.get('transportation2'),Cookies.get('EndStation'),Cookies.get('EndStation2'),Cookies.get('Time2'),0);
+           console.log("end",end)
+           var next=document.getElementsByClassName("AA");
+           var name=document.getElementsByTagName("tr");
+           //console.log(start,end)
+           if(id==1){ 
+               var trip2=[],trip3=[]
+               console.log(name);
+               //console.log(name.length)
+               var Time=Cookies.get('Time').split('-')[1].split(':')
+               var Time2=Cookies.get('Time2').split('-')[0].split(':')
+               Time=parseInt(Time[0])*60+parseInt(Time[1])
+               Time2=parseInt(Time2[0])*60+parseInt(Time2[1])
+               console.log(Time2,Time)
+               var total=Time2-Time
+               console.log(total)
+               var total2=0;
+               for(var i=0;i<next.length;i++){
+                    total2+=parseInt(next[i].value)
+               }
+                total2*=60
+                if(total<total2){
+                    $.Notify({
+    					caption: '時間超過',
+    					content: '請重新選擇',
+						timeout:3000,
+    					type: 'warning'
+					});
+                }
+                else{
+                    for(var i=2;i<name.length-1;i++){
+                        trip2.push(name[i].outerText.split('	')[1])
+                    }
+                    for(var i=0;i<trip2.length;i++){
+                        trip3[i]={
+                            travel:trip2[i]
+                        }
+                    }
+                    switch(go){
+                        case "台北":
+                             $.ajax({
+                                url:"GetTravel.php",
+                                data:JSON.stringify(trip3),
+                                dataType:"json",
+                                type:'post',
+                                success:function(data){
+                                    //console.log(data)
+                                    trip5[0]=start
+                                    for(var i=0;i<data.length;i++){
+                                        data[i]={
+                                            label:"景點",
+                                            label2:data[i].label2,
+                                            lat:data[i].lat,
+                                            lng:data[i].lng,
+                                            name:data[i].name,
+                                            time:next[i].value
+                                        }
+                                        trip5.push(data[i])
+                                    }
+                                    trip5[trip5.length]=end
+                                    Cookies.set("trip9",trip5)
+                                    window.location.href="trip3.html"
+                                  
+                                }
+                            });
+                            break;
+                        case "台中": 
+                            $.ajax({
+                                url:"GetTravel1.php",
+                                data:JSON.stringify(trip3),
+                                dataType:"json",
+                                type:'post',
+                                success:function(data){
+                                    trip5[0]=start
+                                    for(var i=0;i<data.length;i++){
+                                        data[i]={
+                                            label:"景點",
+                                            label2:data[i].label2,
+                                            lat:data[i].lat,
+                                            lng:data[i].lng,
+                                            name:data[i].name,
+                                            time:next[i].value
+                                        }
+                                        trip5.push(data[i])
+                                    }
+                                    trip5[trip5.length]=end
+                                    Cookies.set("trip9",trip5)
+                                    window.location.href="trip3.html"
+                                }
+                            });
+                            break;
+                        case "高雄":
+                            console.log("AA")
+                            $.ajax({
+                                url:"GetTravel2.php",
+                                data:JSON.stringify(trip3),
+                                dataType:"json",
+                                type:'post',
+                                success:function(data){
+                                    trip5[0]=start
+                                    for(var i=0;i<data.length;i++){
+                                        data[i]={
+                                            label:"景點",
+                                            label2:data[i].label2,
+                                            lat:data[i].lat,
+                                            lng:data[i].lng,
+                                            name:data[i].name,
+                                            time:next[i].value
+                                        }
+                                        trip5.push(data[i])
+                                    }
+                                    trip5[trip5.length]=end
+                                    Cookies.set("trip9",trip5)
+                                    window.location.href="trip3.html"
+                                }
+                            });
+                            break;
+               }                   
+            }
+               
+               
+               
+           }
+           else{
+               //非一天
+               if(dur2==1){
+                   var next2=document.getElementsByClassName("BB");
+                   var sleep=document.getElementById("sleep");
+                   var a=0;
+                   for(var j=0;j<next2.length;j++){
+                        if(next2[j].value=="住宿"){
+                            a++;
+                        }
+                   }  
+                    if(a>1){
+                        $.Notify({
+    						caption: '住宿超過',
+    						content: '請重新選擇住宿地方',
+							timeout:3000,
+    						type: 'warning'
+						});        
+                    }
+                    else{
+                         var trip2=[],trip3=[]
+                         var Time=Cookies.get('Time').split('-')[1].split(':')
+                         Time=parseInt(Time[0])*60+parseInt(Time[1])
+                         sleep2=parseInt(sleep.value.split(":")[0])*60
+                         var total=sleep2-Time;
+                         var total2;
+                         var total2=0;
+                         for(var i=0;i<next.length;i++){
+                            total2+=parseInt(next[i].value)
+                          }
+                          total2*=60
+                         if(total>total2){
+                              for(var i=2;i<name.length-1;i++){
+                                    trip2.push(name[i].outerText.split('	')[1])
+                              }
+                              for(var i=0;i<trip2.length;i++){
+                                    trip3[i]={
+                                        travel:trip2[i]
+                                    }
+                              }
+                              console.log(trip3)
+                              switch(go){
+                                 case "台北":
+                                    $.ajax({
+                                        url:"GetTravel.php",
+                                        data:JSON.stringify(trip3),
+                                        dataType:"json",
+                                        type:'post',
+                                        success:function(data){
+                                           
+                                            trip5[0]=start
+                                            for(var i=0;i<data.length;i++){
+                                                data[i]={
+                                                    label:next2[i].value,
+                                                    label2:data[i].label2,
+                                                    lat:data[i].lat,
+                                                    lng:data[i].lng,
+                                                    name:data[i].name,
+                                                    time:next[i].value
+                                                }
+                                                trip5.push(data[i])
+                                            }
+                                            var end={
+                                                name:"結束時間",
+                                                time:sleep.value
+                                            }
+                                            trip5.push(end)
+                                            Cookies.set("trip5",trip5)
+                                            console.log(trip5)
+                                            if(dur==2){
+                                               
+                                                two2(data[data.length-1].name)
+                                            }
+                                            else{
+                                                two(data[data.length-1].name)
+                                            }
+                                            
+                                            var tripId=document.getElementById("trip")
+                                            for(var i=1;i<trip5.length-1;i++){
+                                                console.log(trip5[i].name)
+                                                tripId.removeChild(document.getElementById(trip5[i].name))
+                                            }
+                                    }
+                                    });
+                                 break;
+                                 case "台中":
+                                    $.ajax({
+                                        url:"GetTravel1.php",
+                                        data:JSON.stringify(trip3),
+                                        dataType:"json",
+                                        type:'post',
+                                        success:function(data){
+                                            //console.log(data)
+                                            trip5[0]=start
+                                            for(var i=0;i<data.length;i++){
+                                                data[i]={
+                                                    label:next2[i].value,
+                                                    label2:data[i].label2,
+                                                    lat:data[i].lat,
+                                                    lng:data[i].lng,
+                                                    name:data[i].name,
+                                                    time:next[i].value
+                                                }
+                                                trip5.push(data[i])
+                                            }
+                                            var end={
+                                                name:"結束時間",
+                                                time:sleep.value
+                                            }
+                                            trip5.push(end)
+                                            Cookies.set("trip5",trip5)
+                                            console.log(trip5)
+                                            if(dur==2){
+                                                two2(data[data.length-1].name)
+                                            }
+                                            else{
+                                                two(data[data.length-1].name)
+                                            }
+                                            var tripId=document.getElementById("trip")
+                                            for(var i=1;i<trip5.length-1;i++){
+                                                console.log(trip5[i].name)
+                                                tripId.removeChild(document.getElementById(trip5[i].name))
+                                            }
+                                     }
+                                    });
+                                    break;
+                                 case "高雄":
+                                  $.ajax({
+                                        url:"GetTravel2.php",
+                                        data:JSON.stringify(trip3),
+                                        dataType:"json",
+                                        type:'post',
+                                        success:function(data){
+                                            //console.log(data)
+                                            trip5[0]=start
+                                            for(var i=0;i<data.length;i++){
+                                                data[i]={
+                                                    label:next2[i].value,
+                                                    label2:data[i].label2,
+                                                    lat:data[i].lat,
+                                                    lng:data[i].lng,
+                                                    name:data[i].name,
+                                                    time:next[i].value
+                                                }
+                                                trip5.push(data[i])
+                                            }
+                                            var end={
+                                                name:"結束時間",
+                                                time:sleep.value
+                                            }
+                                            trip5.push(end)
+                                            Cookies.set("trip5",trip5)
+                                            console.log(trip5)
+                                            if(dur==2){
+                                                two2(data[data.length-1].name)
+                                            }
+                                            else{
+                                                two(data[data.length-1].name)
+                                            }
+                                            var tripId=document.getElementById("trip")
+                                            for(var i=1;i<trip5.length-1;i++){
+                                                console.log(trip5[i].name)
+                                                tripId.removeChild(document.getElementById(trip5[i].name))
+                                            }
+                                    }
+                                  });
+                                    break;
+                              }
+                            dur2++;
+                            console.log(dur2) 
+                         }
+                         else{
+                            $.Notify({
+    						    caption: '時間超過',
+    						    content: '請重新選擇時間',
+							    timeout:3000,
+    						    type: 'warning'
+						    });   
+                         }
+                    }
+               }
+               else if(dur2==2){
+                   var trip2=[],trip3=[]
+                   var next2=document.getElementsByClassName("BB");
+                   if(dur==2){
+                       var start=document.getElementById("start");
+                       start2=parseInt(start.value.split(":")[0])*60
+                       var Time=Cookies.get('Time2').split('-')[0].split(':')
+                       Time=parseInt(Time[0])*60+parseInt(Time[1])
+                       var total=Time-start2
+                       var total2=0;
+                       for(var i=0;i<next.length;i++){
+                            total2+=parseInt(next[i].value)
+                       }
+                       total2*=60
+                       console.log(total,total2)
+                       if(total>total2){
+                            var next=document.getElementsByClassName("AA");
+                           for(var i=2;i<name.length-1;i++){
+                                trip2.push(name[i].outerText.split('	')[1])
+                            }
+                            for(var i=0;i<trip2.length;i++){
+                                trip3[i]={
+                                    travel:trip2[i]
+                                }
+                            }
+                             switch(go){
+                                case "台北":
+                                    $.ajax({
+                                        url:"GetTravel.php",
+                                        data:JSON.stringify(trip3),
+                                        dataType:"json",
+                                        type:'post',
+                                        success:function(data){
+                                            var a=-1;
+                                            for(var i=0;i<trip5.length;i++){
+                                                if(trip5[i].label=="住宿"){
+                                                    a=i
+                                                }
+                                            }
+                                            if(a!=-1){
+                                                trip6[0]={
+                                                        label:"住宿",
+                                                        label2:trip5[a].label2,
+                                                        lat:trip5[a].lat,
+                                                        lng:trip5[a].lng,
+                                                        name:trip5[a].name,
+                                                        time:start.value
+                                                    }
+                                            }
+                                            else{
+                                                 trip6[0]={
+                                                        label:"住宿",
+                                                        label2:trip5[trip5.length-2].label2,
+                                                        lat:trip5[trip5.length-2].lat,
+                                                        lng:trip5[trip5.length-2].lng,
+                                                        name:trip5[trip5.length-2].name,
+                                                        time:start.value
+                                                    }
+                                            }
+                                            
+                                            console.log(trip6)
+                                          
+                                            for(var i=0;i<data.length;i++){
+                                                data[i]={
+                                                    label:"景點",
+                                                    label2:data[i].label2,
+                                                    lat:data[i].lat,
+                                                    lng:data[i].lng,
+                                                    name:data[i].name,
+                                                    time:next[i].value
+                                                }
+                                                trip6.push(data[i])
+                                            }
+                                            trip6[trip6.length]=end
+                                            console.log(trip6)
+                                            Cookies.set("trip6",trip6)
+                                            window.location.href="trip3.html"
+                                        }
+                                    });
+                                    break;
+                                case "台中": 
+                                    $.ajax({
+                                        url:"GetTravel1.php",
+                                        data:JSON.stringify(trip3),
+                                        dataType:"json",
+                                        type:'post',
+                                        success:function(data){
+                                            //console.log(data)
+                                           var a=-1;
+                                            for(var i=0;i<trip5.length;i++){
+                                                if(trip5[i].label=="住宿"){
+                                                    a=i
+                                                }
+                                            }
+                                            if(a!=-1){
+                                                trip6[0]={
+                                                        label:"住宿",
+                                                        label2:trip5[a].label2,
+                                                        lat:trip5[a].lat,
+                                                        lng:trip5[a].lng,
+                                                        name:trip5[a].name,
+                                                        time:start.value
+                                                    }
+                                            }
+                                            else{
+                                                 trip6[0]={
+                                                        label:"住宿",
+                                                        label2:trip5[trip5.length-2].label2,
+                                                        lat:trip5[trip5.length-2].lat,
+                                                        lng:trip5[trip5.length-2].lng,
+                                                        name:trip5[trip5.length-2].name,
+                                                        time:start.value
+                                                    }
+                                            }
+                                           // console.log(trip6)
+                                            //console.log(next)
+                                            for(var i=0;i<data.length;i++){
+                                                data[i]={
+                                                    label:"景點",
+                                                    label2:data[i].label2,
+                                                    lat:data[i].lat,
+                                                    lng:data[i].lng,
+                                                    name:data[i].name,
+                                                    time:next[i].value
+                                                }
+                                                trip6.push(data[i])
+                                            }
+                                            trip6[trip6.length]=end
+                                            console.log(trip6)
+                                            Cookies.set("trip6",trip6)
+                                            window.location.href="trip3.html"
+                                        }
+                                    });
+                                    break;
+                                case "高雄":
+                                    console.log("AA")
+                                    $.ajax({
+                                        url:"GetTravel2.php",
+                                        data:JSON.stringify(trip3),
+                                        dataType:"json",
+                                        type:'post',
+                                        success:function(data){
+                                           var a=-1;
+                                           for(var i=0;i<trip5.length;i++){
+                                                if(trip5[i].label=="住宿"){
+                                                    a=i
+                                                }
+                                            }
+                                            if(a!=-1){
+                                                trip6[0]={
+                                                        label:"住宿",
+                                                        label2:trip5[a].label2,
+                                                        lat:trip5[a].lat,
+                                                        lng:trip5[a].lng,
+                                                        name:trip5[a].name,
+                                                        time:start.value
+                                                    }
+                                            }
+                                            else{
+                                                 trip6[0]={
+                                                        label:"住宿",
+                                                        label2:trip5[trip5.length-2].label2,
+                                                        lat:trip5[trip5.length-2].lat,
+                                                        lng:trip5[trip5.length-2].lng,
+                                                        name:trip5[trip5.length-2].name,
+                                                        time:start.value
+                                                    }
+                                            }
+                                           // console.log(trip6)
+                                            //console.log(next)
+                                            for(var i=0;i<data.length;i++){
+                                                data[i]={
+                                                    label:"景點",
+                                                    label2:data[i].label2,
+                                                    lat:data[i].lat,
+                                                    lng:data[i].lng,
+                                                    name:data[i].name,
+                                                    time:next[i].value
+                                                }
+                                                trip6.push(data[i])
+                                            }
+                                            trip6[trip6.length]=end
+                                            console.log(trip6)
+                                            Cookies.set("trip6",trip6)
+                                            window.location.href="trip3.html"
+                                        }
+                                    });
+                                    break;
+                        }     
+                            
+                       }
+                       else{
+                           $.Notify({
+    					        caption: '時間超過',
+    					        content: '請重新選擇',
+						        timeout:3000,
+    					        type: 'warning'
+					        });
+                       }
+                       
+                   }
+                   else{
+                        var sleep=document.getElementById("sleep");
+                        var start=document.getElementById("start");
+                        var a=0;
+                        for(var j=0;j<next2.length;j++){
+                            if(next2[j].value=="住宿"){
+                                a++;
+                            }
+                        }  
+                        if(a>1){
+                            $.Notify({
+    						    caption: '住宿超過',
+    						    content: '請重新選擇住宿地方',
+							    timeout:3000,
+    						    type: 'warning'
+						    });        
+                        }
+                        else{
+                            if(next.length==0){
+                                $.Notify({
+    						        caption: '數量問題',
+    						        content: '請選擇左方控制列的景點',
+							        timeout:3000,
+    						        type: 'warning'
+						        });
+                            }
+                            else{
+                                var trip2=[],trip3=[]
+                                start2=parseInt(start.value.split(":")[0])*60
+                                sleep2=parseInt(sleep.value.split(":")[0])*60
+                                var total=sleep2-start2;
+                                var total2=0;
+                                for(var i=0;i<next.length;i++){
+                                    total2+=parseInt(next[i].value)
+                                }
+                                total2*=60
+                                if(total>total2){
+                                    for(var i=2;i<name.length-1;i++){
+                                        trip2.push(name[i].outerText.split('	')[1])
+                                    }
+                                    for(var i=0;i<trip2.length;i++){
+                                        trip3[i]={
+                                            travel:trip2[i]
+                                        }
+                                    }
+                                    switch(go){
+                                    case "台北":
+                                            $.ajax({
+                                                url:"GetTravel.php",
+                                                data:JSON.stringify(trip3),
+                                                dataType:"json",
+                                                type:'post',
+                                                success:function(data){
+                                                    //console.log(data)
+                                                    trip6=[]
+                                                    var a=-1;
+                                                    for(var i=0;i<trip5.length;i++){
+                                                        if(trip5[i].label=="住宿"){
+                                                            a=i
+                                                        }
+                                                    }
+                                                    if(a!=-1){
+                                                        trip6[0]={
+                                                            label:"住宿",
+                                                            label2:trip5[a].label2,
+                                                            lat:trip5[a].lat,
+                                                            lng:trip5[a].lng,
+                                                            name:trip5[a].name,
+                                                            time:start.value
+                                                        }
+                                                    }
+                                                    else{
+                                                        trip6[0]={
+                                                            label:"住宿",
+                                                            label2:trip5[trip5.length-2].label2,
+                                                            lat:trip5[trip5.length-2].lat,
+                                                            lng:trip5[trip5.length-2].lng,
+                                                            name:trip5[trip5.length-2].name,
+                                                            time:start.value
+                                                        }
+                                                    }
+                                                    
+                                                    for(var i=0;i<data.length;i++){
+                                                        data[i]={
+                                                            label:next2[i].value,
+                                                            label2:data[i].label2,
+                                                            lat:data[i].lat,
+                                                            lng:data[i].lng,
+                                                            name:data[i].name,
+                                                            time:next[i].value
+                                                        }
+                                                        trip6.push(data[i])
+                                                    }
+                                                    var end={
+                                                        name:"結束時間",
+                                                        time:sleep.value
+                                                    }
+                                                    trip6.push(end)
+                                                    Cookies.set("trip6",trip6)
+                                                    console.log(trip6)
+                                                    if(dur==2){
+                                                        window.location.href="trip3.html"
+                                                    }
+                                                    else{
+                                                        three(data[data.length-1].name)
+                                                        var tripId=document.getElementById("trip")
+                                                        for(var i=1;i<trip6.length-1;i++){
+                                                            console.log(trip6[i].name)
+                                                            tripId.removeChild(document.getElementById(trip6[i].name))
+                                                        }
+                                                    }
+                                            }
+                                        });
+                                        break;
+                                    case "台中":
+                                        $.ajax({
+                                            url:"GetTravel1.php",
+                                            data:JSON.stringify(trip3),
+                                            dataType:"json",
+                                            type:'post',
+                                            success:function(data){
+                                                //console.log(data)
+                                                trip6=[]
+                                                var a=-1;
+                                                    for(var i=0;i<trip5.length;i++){
+                                                        if(trip5[i].label=="住宿"){
+                                                            a=i
+                                                        }
+                                                    }
+                                                    if(a!=-1){
+                                                        trip6[0]={
+                                                            label:"住宿",
+                                                            label2:trip5[a].label2,
+                                                            lat:trip5[a].lat,
+                                                            lng:trip5[a].lng,
+                                                            name:trip5[a].name,
+                                                            time:start.value
+                                                        }
+                                                    }
+                                                    else{
+                                                        trip6[0]={
+                                                            label:"住宿",
+                                                            label2:trip5[trip5.length-2].label2,
+                                                            lat:trip5[trip5.length-2].lat,
+                                                            lng:trip5[trip5.length-2].lng,
+                                                            name:trip5[trip5.length-2].name,
+                                                            time:start.value
+                                                        }
+                                                    }
+                                                for(var i=0;i<data.length;i++){
+                                                    data[i]={
+                                                        label:"景點",
+                                                        label2:data[i].label2,
+                                                        lat:data[i].lat,
+                                                        lng:data[i].lng,
+                                                        name:data[i].name,
+                                                        time:next[i].value
+                                                    }
+                                                    trip6.push(data[i])
+                                                }
+                                                var end={
+                                                    name:"結束時間",
+                                                    time:sleep.value
+                                                }
+                                                trip6.push(end)
+                                                Cookies.set("trip6",trip6)
+                                                console.log(trip6)
+                                                if(dur==2){
+                                                    window.location.href="trip3.html"
+                                                }
+                                                else{
+                                                    three(data[data.length-1].name)
+                                                    var tripId=document.getElementById("trip")
+                                                    for(var i=1;i<trip6.length-1;i++){
+                                                        console.log(trip6[i].name)
+                                                        tripId.removeChild(document.getElementById(trip6[i].name))
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        break;
+                                    case "高雄":
+                                        $.ajax({
+                                            url:"GetTravel2.php",
+                                            data:JSON.stringify(trip3),
+                                            dataType:"json",
+                                            type:'post',
+                                            success:function(data){
+                                                //console.log(data)
+                                                trip6=[]
+                                                var a=-1;
+                                                    for(var i=0;i<trip5.length;i++){
+                                                        if(trip5[i].label=="住宿"){
+                                                            a=i
+                                                        }
+                                                    }
+                                                    if(a!=-1){
+                                                        trip6[0]={
+                                                            label:"住宿",
+                                                            label2:trip5[a].label2,
+                                                            lat:trip5[a].lat,
+                                                            lng:trip5[a].lng,
+                                                            name:trip5[a].name,
+                                                            time:start.value
+                                                        }
+                                                    }
+                                                    else{
+                                                        trip6[0]={
+                                                            label:"住宿",
+                                                            label2:trip5[trip5.length-2].label2,
+                                                            lat:trip5[trip5.length-2].lat,
+                                                            lng:trip5[trip5.length-2].lng,
+                                                            name:trip5[trip5.length-2].name,
+                                                            time:start.value
+                                                        }
+                                                    }
+                                                for(var i=0;i<data.length;i++){
+                                                    data[i]={
+                                                        label:"景點",
+                                                        label2:data[i].label2,
+                                                        lat:data[i].lat,
+                                                        lng:data[i].lng,
+                                                        name:data[i].name,
+                                                        time:next[i].value
+                                                    }
+                                                    trip6.push(data[i])
+                                                }
+                                                var end={
+                                                    name:"結束時間",
+                                                    time:sleep.value
+                                                }
+                                                trip6.push(end)
+                                                Cookies.set("trip6",trip6)
+                                                console.log(trip6)
+                                                if(dur==2){
+                                                    window.location.href="trip3.html"
+                                                }
+                                                else{
+                                                    three(data[data.length-1].name)
+                                                    var tripId=document.getElementById("trip")
+                                                    for(var i=1;i<trip6.length-1;i++){
+                                                        console.log(trip6[i].name)
+                                                        tripId.removeChild(document.getElementById(trip6[i].name))
+                                                    }
+                                                }
+                                            }
+                                        });
+                                        break;
+                                    }
+                                    dur2++;
+                                    console.log(dur2)
+                                }
+                                else{
+                                    $.Notify({
+    						            caption: '時間超過',
+    						            content: '請重新選擇時間',
+							            timeout:3000,
+    						            type: 'warning'
+						            });   
+                                }
+                            }
+                        }  
+                   }     
+               }
+               else{
+                   var trip2=[],trip3=[]
+                   var next2=document.getElementsByClassName("BB");
+                   var start=document.getElementById("start");
+                   var a=0;
+                   for(var j=0;j<next2.length;j++){
+                        if(next2[j].value=="住宿"){
+                            a++;
+                        }
+                   }
+                   if(a>1){
+                        $.Notify({
+    						caption: '住宿超過',
+    						content: '請重新選擇住宿地方',
+							timeout:3000,
+    						type: 'warning'
+						});        
+                  }
+                  else{
+                      if(next.length==0){
+                            $.Notify({
+    						    caption: '數量問題',
+    						    content: '請選擇左方控制列的景點',
+							    timeout:3000,
+    						    type: 'warning'
+						    });
+                     }
+                     else{
+                         var trip2=[],trip3=[]
+                         start2=parseInt(start.value.split(":")[0])*60
+                         var Time=Cookies.get('Time2').split('-')[1].split(':')
+                         Time=parseInt(Time[0])*60+parseInt(Time[1])
+                         var total=Time-start2;
+                         var total2=0;
+                         for(var i=0;i<next.length;i++){
+                            total2+=parseInt(next[i].value)
+                         }
+                         if(total>total2){
+                             for(var i=2;i<name.length-1;i++){
+                                    trip2.push(name[i].outerText.split('	')[1])
+                              }
+                              for(var i=0;i<trip2.length;i++){
+                                    trip3[i]={
+                                        travel:trip2[i]
+                                    }
+                              }
+                               switch(go){
+                                case "台北":
+                                    $.ajax({
+                                        url:"GetTravel.php",
+                                        data:JSON.stringify(trip3),
+                                        dataType:"json",
+                                        type:'post',
+                                        success:function(data){
+                                            //console.log(data)
+                                            trip7[0]={
+                                                    label:"住宿",
+                                                    label2:trip6[trip6.length-2].label2,
+                                                    lat:trip6[trip6.length-2].lat,
+                                                    lng:trip6[trip6.length-2].lng,
+                                                    name:trip6[trip6.length-2].name,
+                                                    time:start.value
+                                            }
+                                           // console.log(trip6)
+                                            //console.log(next)
+                                            for(var i=0;i<data.length;i++){
+                                                data[i]={
+                                                    label:"景點",
+                                                    label2:data[i].label2,
+                                                    lat:data[i].lat,
+                                                    lng:data[i].lng,
+                                                    name:data[i].name,
+                                                    time:next[i].value
+                                                }
+                                                trip7.push(data[i])
+                                            }
+                                            trip7[trip7.length]=end
+                                            console.log(trip7)
+                                            Cookies.set("trip7",trip7)
+                                            window.location.href="trip3.html"
+                                        }
+                                    });
+                                    break;
+                                case "台中": 
+                                    $.ajax({
+                                        url:"GetTravel1.php",
+                                        data:JSON.stringify(trip3),
+                                        dataType:"json",
+                                        type:'post',
+                                        success:function(data){
+                                            //console.log(data)
+                                            trip7[0]={
+                                                    label:"住宿",
+                                                    label2:trip6[trip6.length-2].label2,
+                                                    lat:trip6[trip6.length-2].lat,
+                                                    lng:trip6[trip6.length-2].lng,
+                                                    name:trip6[trip6.length-2].name,
+                                                    time:start.value
+                                            }
+                                           // console.log(trip6)
+                                            //console.log(next)
+                                            for(var i=0;i<data.length;i++){
+                                                data[i]={
+                                                    label:"景點",
+                                                    label2:data[i].label2,
+                                                    lat:data[i].lat,
+                                                    lng:data[i].lng,
+                                                    name:data[i].name,
+                                                    time:next[i].value
+                                                }
+                                                trip7.push(data[i])
+                                            }
+                                            trip7[trip7.length]=end
+                                            console.log(trip7)
+                                            Cookies.set("trip7",trip7)
+                                            window.location.href="trip3.html"
+                                        }
+                                    });
+                                    break;
+                                case "高雄":
+                                    console.log("AA")
+                                    $.ajax({
+                                        url:"GetTravel2.php",
+                                        data:JSON.stringify(trip3),
+                                        dataType:"json",
+                                        type:'post',
+                                        success:function(data){
+                                             trip7[0]={
+                                                    label:"住宿",
+                                                    label2:trip6[trip6.length-2].label2,
+                                                    lat:trip6[trip6.length-2].lat,
+                                                    lng:trip6[trip6.length-2].lng,
+                                                    name:trip6[trip6.length-2].name,
+                                                    time:start.value
+                                            }
+                                           // console.log(trip6)
+                                            //console.log(next)
+                                            for(var i=0;i<data.length;i++){
+                                                data[i]={
+                                                    label:"景點",
+                                                    label2:data[i].label2,
+                                                    lat:data[i].lat,
+                                                    lng:data[i].lng,
+                                                    name:data[i].name,
+                                                    time:next[i].value
+                                                }
+                                                trip7.push(data[i])
+                                            }
+                                            trip7[trip7.length]=end
+                                            console.log(trip7)
+                                            Cookies.set("trip7",trip7)
+                                            window.location.href="trip3.html"
+                                        }
+                                    });
+                                    break;
+                        }     
+                         }
+                         else{
+                             $.Notify({
+    					        caption: '時間超過',
+    					        content: '請重新選擇',
+						        timeout:3000,
+    					        type: 'warning'
+					        });
+                         }
+                     }
+                  } 
+               }
+           }   
+    }
+    function two2(data){
+        var transportation3;
+        var transportation4=Cookies.get('transportation2')
+        if(transportation4=="hightrain")
+                transportation3="高鐵"
+        else{
+               transportation3="台鐵"
+        }
+         var endstation=Cookies.get('EndStation')
+         var endstation2=Cookies.get('EndStation2')
+         var time=Cookies.get('Time2')
+         var x=document.getElementById("cell-content");
+         var selectTime2="<div class='input-control select'><select id=start><option>6:00</option><option>7:00</option><option>8:00</option><option>9:00</option><option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option><option>19:00</option><option>20:00</option><option>21:00</option><option>22:00</option><option>23:00</option></select></div>"
+         var selectTime3="<div class='input-control select'><select id=sleep><option>6:00</option><option>7:00</option><option>8:00</option><option>9:00</option><option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option><option>19:00</option><option>20:00</option><option>21:00</option><option>22:00</option><option>23:00</option></select></div>"
+         var Html="<h1 class='text-light margin20 fg-white'>第2天<a class='button danger' onclick=next_day(2)><span class=mif-next></span>下一天</a></h1><hr class='thin bg-white'>"
+         Html+="<div style=background-color:#fff><table class='table border bordered hovered'><thead><tr><th>地點</th><th>景點</th><th>請選擇待的時間</th><th>請選擇今日睡覺的地方</th></tr></thead><tbody id=table><tr>"
+         Html+="<td>"+go+"</td><td>"+data+"</td><td>"+selectTime2+"</td><td>"+"</td></tr>"
+         Html+="<tr><td>回程"+transportation3+"</td><td>搭"+endstation+transportation3+endstation2+transportation3+"</td><td>"+time+"</td></tr>"
+         x.innerHTML=Html
+         Ri=1;
+    }
+    function two(data){
+         var x=document.getElementById("cell-content");
+          var selectTime2="<div class='input-control select'><select id=start><option>6:00</option><option>7:00</option><option>8:00</option><option>9:00</option><option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option><option>19:00</option><option>20:00</option><option>21:00</option><option>22:00</option><option>23:00</option></select></div>"
+         var selectTime3="<div class='input-control select'><select id=sleep><option>6:00</option><option>7:00</option><option>8:00</option><option>9:00</option><option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option><option>19:00</option><option>20:00</option><option>21:00</option><option>22:00</option><option>23:00</option></select></div>"
+         var Html="<h1 class='text-light margin20 fg-white'>第2天<a class='button danger' onclick=next_day(2)><span class=mif-next></span>下一天</a></h1><hr class='thin bg-white'>"
+         Html+="<div style=background-color:#fff><table class='table border bordered hovered'><thead><tr><th>地點</th><th>景點</th><th>請選擇待的時間</th><th>請選擇今日睡覺的地方</th></tr></thead><tbody id=table><tr>"
+         Html+="<td>"+go+"</td><td>"+data+"</td><td>"+selectTime2+"</td><td>"+"</td></tr>"
+         Html+="<td>"+go+"</td><td>今天結束時間</td><td>"+selectTime3+"</td><td></td></tr>"
+         x.innerHTML=Html
+         Ri=1;
+         
+    }
+    function three(data){
+        var transportation3;
+        var transportation4=Cookies.get('transportation2')
+        if(transportation4=="hightrain")
+                transportation3="高鐵"
+        else{
+               transportation3="台鐵"
+        }
+         var endstation=Cookies.get('EndStation')
+         var endstation2=Cookies.get('EndStation2')
+         var time=Cookies.get('Time2')
+         var x=document.getElementById("cell-content");
+         var selectTime2="<div class='input-control select'><select id=start><option>6:00</option><option>7:00</option><option>8:00</option><option>9:00</option><option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option><option>19:00</option><option>20:00</option><option>21:00</option><option>22:00</option><option>23:00</option></select></div>"
+         var selectTime3="<div class='input-control select'><select id=sleep><option>6:00</option><option>7:00</option><option>8:00</option><option>9:00</option><option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option><option>19:00</option><option>20:00</option><option>21:00</option><option>22:00</option><option>23:00</option></select></div>"
+         var Html="<h1 class='text-light margin20 fg-white'>第3天<a class='button danger' onclick=next_day(2)><span class=mif-next></span>下一天</a></h1><hr class='thin bg-white'>"
+         Html+="<div style=background-color:#fff><table class='table border bordered hovered'><thead><tr><th>地點</th><th>景點</th><th>請選擇待的時間</th><th>請選擇今日睡覺的地方</th></tr></thead><tbody id=table><tr>"
+         Html+="<td>"+go+"</td><td>"+data+"</td><td>"+selectTime2+"</td><td>"+"</td></tr>"
+         Html+="<tr><td>回程"+transportation3+"</td><td>搭"+endstation+transportation3+endstation2+transportation3+"</td><td>"+time+"</td></tr>"
+         x.innerHTML=Html
+         Ri=1;
+    }
+       function GetLoc2(trans,station,station2,time,i){
+          var lat=0;
+          var lng=0;
+          if(Cookies.get('transportation2')=="hightrain"){
+               trans3="高鐵"
+          }
+          else{
+               trans3="台鐵"
+          }
+          switch(trans){
+                case "hightrain":
+                    switch(station){
+                        case "台北":
+                            lat=25.0472135
+                            lng=121.5149971     
+                        break;    
+                        case "南港":
+                            lat=25.0525163
+                            lng=121.6046791
+                        break;
+                        case "板橋":
+                            lat=25.0146249
+                            lng=121.4626891    
+                        break;
+                        case "台中":
+                            lat=24.1117147
+                            lng=120.6138852    
+                        break;
+                        case "高雄":
+                            lat=22.6873873
+                            lng=120.3052999    
+                        break;
+                    }
+                    break;
+                case "train":
+                    switch(station){
+                        case "台北":
+                            lat=25.0472135
+                            lng=121.5149971   
+                        break;    
+                        case "松山":
+                            lat=25.0492925
+                            lng=121.5760839   
+                        break;
+                        case "板橋":
+                            lat=25.0146249
+                            lng=121.4626891 
+                        break;
+                        case "沙鹿": 
+                            lat=24.2370499
+                            lng=120.5554383
+                        break;
+                        case "大甲":
+                            lat=24.3445189
+                            lng=120.6248783
+                        break;
+                        case "豐原":
+                            lat=24.2541179
+                            lng=120.7207293
+                        break;
+                        case "台中":
+                            lat=24.1375016
+                            lng=120.6844116
+                        break;
+                        case "新左營":
+                            lat=22.6873873
+                            lng=120.3052999
+                        break;    
+                        case "高雄":
+                            lat=22.6397674
+                            lng=120.2999193
+                        break;
+                    }
+                    break;
+                }
+               if(i==1){
+                var trans={
+                    label:trans2+"車站",
+                    label2:"0",
+                    lat:lat.toString(),
+                    lng:lng.toString(),
+                    name:station2+">>"+station,
+                    time:time
+                }
+            }
+            else{
+                var trans={
+                    label:trans3+"車站",
+                    label2:"0",
+                    lat:lat.toString(),
+                    lng:lng.toString(),
+                    name:station+">>"+station2,
+                    time:time
+                }
+            }
+            return trans;  
+       }
+       function GetLoc(trans,station,station2,time,i){
+            //抓啟程跟END
+          if(Cookies.get('transportation1')=="hightrain"){
+              trans2="高鐵"
+          }
+          else{
+              trans2="台鐵"
+          }
+          if(Cookies.get('transportation2')=="hightrain"){
+               trans3="高鐵"
+          }
+          else{
+               trans3="台鐵"
+          }
+         
+          var lat=0;
+          var lng=0;
+      
+            switch(trans){
+                case "hightrain":
+                    switch(station){
+                        case "台北":
+                            lat=25.0472125
+                            lng=121.5149961     
+                        break;    
+                        case "南港":
+                            lat=25.0525153
+                            lng=121.6046781
+                        break;
+                        case "板橋":
+                            lat=25.0146239
+                            lng=121.4626881    
+                        break;
+                        case "台中":
+                            lat=24.1117137
+                            lng=120.6138842    
+                        break;
+                        case "高雄":
+                            lat=22.6873863
+                            lng=120.3052991    
+                        break;
+                    }
+                    break;
+                case "train":
+                    switch(station){
+                        case "台北":
+                            lat=25.0472125
+                            lng=121.5149961   
+                        break;    
+                        case "松山":
+                            lat=25.0492915
+                            lng=121.5760829   
+                        break;
+                        case "板橋":
+                            lat=25.0146239
+                            lng=121.4626881 
+                        break;
+                        case "沙鹿": 
+                            lat=24.2370489
+                            lng=120.5554373
+                        break;
+                        case "大甲":
+                            lat=24.3445179
+                            lng=120.6248773
+                        break;
+                        case "豐原":
+                            lat=24.2541169
+                            lng=120.7207283
+                        break;
+                        case "台中":
+                            lat=24.1375006
+                            lng=120.6844106
+                        break;
+                        case "新左營":
+                            lat=22.6873863
+                            lng=120.3052991
+                        break;    
+                        case "高雄":
+                            lat=22.6397664
+                            lng=120.2999183
+                        break;
+                    }
+                    break;
+                }
+            if(i==1){
+                var trans={
+                    label:trans2+"車站",
+                    label2:"0",
+                    lat:lat.toString(),
+                    lng:lng.toString(),
+                    name:station2+">>"+station,
+                    time:time
+                }
+            }
+            else{
+                var trans={
+                    label:trans3+"車站",
+                    label2:"0",
+                    lat:lat.toString(),
+                    lng:lng.toString(),
+                    name:station+">>"+station2,
+                    time:time
+                }
+            }
+            return trans; 
+        }
+       
+</script>
+</head>
+
+<body>
+    <div class="app-bar fixed-top bg-black darcula" data-role="appbar">
+        <a class="app-bar-element " href="login.html">天氣亂入輕旅行</a>
+        <ul class="app-bar-menu">
+            <li data-flexorderorigin="0" data-flexorder="1"><a href="index.html">今日天氣</a></li>
+            <li data-flexorderorigin="2" data-flexorder="3">
+                <a href="" class="dropdown-toggle">旅遊規劃</a>
+                <ul class="d-menu" data-role="dropdown">
+                    <li><a href="trip.html">自動規劃</a></li>
+                    <li><a href="control_trip.html">手動規劃</a></li>
+                     <li><a href="Member_trip.html">參考旅遊</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="app-bar-element place-right active-container" id=member>
+            <span class="dropdown-toggle active-toggle "><span class="mif-cog"></span>使用者</span>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="flex-grid" style="height: 100%;">
+            <div class="row" style="height: 100%">
+                <!--div class="cell" id="cell-sidebar">
+                    <ul class="v-menu darcula min-size-required" style="height: 100%;">
+                        <li class="menu-title">天氣預報</li>
+                        <li class="active-container">
+                            <a href="index.html"><span class="mif-cloudy icon"></span>10日預報</a>
+
+                        </li>
+                        <li class="menu-title">旅遊</li>
+                        <li><a href="trip.html"><span class="mif-compass icon"></span>旅遊規劃</a></li>
+                    </ul>
+                </div-->
+                <div class="content2">
+                        <div>
+                            <div class="tagtitle">景點</div>
+                            <div id="trip"></div>
+                        </div>
+                        
+                    </div>
+                <div class="cell auto-size padding20" id="cell-content" style="background-color:#2e80ab;">
+                    
+
+                </div>
+                
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

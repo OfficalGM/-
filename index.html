@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>天氣亂入輕旅行</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link href="css/metro-schemes.css" rel="stylesheet">
+    <link href="css/metro-responsive.css" rel="stylesheet">
+    <link href="css/metro.css" rel="stylesheet">
+    <link href="css/metro-icons.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="js/metro.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="liquidFillGauge.js" language="JavaScript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+    <script src="js.cookie.js"></script>
+    <style>
+        html,
+        body {
+            background-color: #2e80ab;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Jhenghei", sans-serif;
+        }
+        
+        .liquidFillGaugeText {
+            font-family: Helvetica;
+            font-weight: bold;
+        }
+        
+        .v-menu li a {
+            min-width: 10rem;
+        }
+        
+        .page-content {
+            padding-top: 3.125rem;
+            min-height: 100%;
+            height: 100%;
+        }
+        
+        .table .input-control.checkbox {
+            line-height: 1;
+            min-height: 0;
+            height: auto;
+        }
+        
+        .tile {
+            width: 230px;
+            height: 265px;
+            margin-top: 40px;
+        }
+        
+        .tile-content.iconic .icon {
+            font-size: 100px;
+            margin-left: -54px;
+            margin-top: -50px;
+        }
+        
+        .Tx {
+            position: absolute;
+            font-size: 1.4rem;
+            left: 23%;
+            top: 47%;
+            text-align: center;
+        }
+        
+        .today {
+            font-size: 300px;
+            margin-left: -150px;
+            margin-top: -200px;
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            top: 50%;
+            left: 50%;
+            text-align: center;
+        }
+        
+        #today {
+            height: 600px;
+            width: 400px;
+        }
+        
+        #today2 {
+            height: 250px;
+            width: 595px;
+        }
+        
+        #today3 {
+            height: 340px;
+            width: 1200px;
+        }
+        
+        .today-content {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            margin-top: 110px;
+            margin-left: 120px;
+            position: absolute;
+        }
+        
+        path {
+            fill: none;
+        }
+        
+        #path2 {
+            stroke: burlywood;
+            stroke-width: 2.5;
+        }
+        
+        path {
+            fill: none;
+        }
+        
+        .axis {
+            font-size: 15px;
+            fill: black;
+        }
+        
+        .x.axis line {
+            stroke: lightgrey;
+        }
+        
+        .x.axis .minor {
+            stroke-opacity: .5;
+        }
+        
+        .x.axis path {
+            stroke: #fafafa;
+        }
+        
+        .y.axis line,
+        .y.axis path {
+            fill: none;
+            stroke: lightgrey;
+        }
+        
+        .font1 {
+            font-size: 1.3rem;
+            margin-left: 10px;
+        }
+        
+        .font2 {
+            font-size: 4.5rem;
+            margin-left: 85px;
+            margin-top: -30px;
+        }
+        
+        .font3 {
+            font-size: 1.5rem;
+            margin-left: 230px;
+            margin-top: -30px;
+        }
+        
+        .font4 {
+            font-size: 1.3rem;
+            margin-left: 10px;
+        }
+        
+        .font5 {
+            font-size: 3.5rem;
+            margin-left: 125px;
+            margin-top: -30px;
+        }
+        
+        .font6 {
+            font-size: 1.3rem;
+            margin-left: 10px;
+        }
+        
+        .font7 {
+            font-size: 3.5rem;
+            margin-left: 125px;
+            margin-top: -30px;
+        }
+        
+        .font8 {
+            font-size: 1.5rem;
+            margin-left: 125px;
+            margin-top: -30px;
+        }
+        .sun{
+            color: #FAD543; 
+            font-size: 250px;
+            margin-top:-100px;
+            margin-left: -130px;
+        }
+        .chart1{
+            height:250px; 
+            width:500px;
+            margin-left:30px;
+        }
+        .wet{
+            margin-top:20px;
+            margin-left:235px;
+            font-size:1.5rem
+        }
+        .gd{
+            margin-left:-5px;
+        }
+        .mor{
+            margin-left:25%;
+            margin-top:-27px;
+        }
+        .aft{
+            margin-left:49%;
+             margin-top:-28px;
+        }
+        .ni{
+            margin-left:74%; 
+            margin-top:-27px;
+        }
+        .chart2{
+            width:1150px; 
+            height:345px;
+            margin-top:5px;
+            margin-left:25px
+        }
+        .accu{
+           
+            max-width: 50%;
+        }
+        .thechannel{
+            max-width: 18%;
+        }
+        .Foreca{
+            max-width: 30%;
+        }
+        .mif-3x{
+            font-size: 2rem;
+        }
+        @media screen and (max-width: 800px) {
+            #cell-sidebar {
+                flex-basis: 52px;
+            }
+            body {
+                overflow-y: scroll;
+                
+            }
+            #cell-content {
+                flex-basis: calc(100% - 52px);
+                 height: 100%;
+                
+            }
+            .today-content{
+                height: 900px;
+            }
+            #today{
+                height: 400px;
+            }
+            #today2 {
+                height: 180px;
+                width: 500px;
+            }
+            #today3{
+                height: 300px;
+                width: 500px;
+            }
+            .today-content {
+                position: relative;
+                margin-left: 0px;
+                margin-top: 50px;
+            }
+            #today3{
+                visibility: hidden;
+            }
+            .font1 {
+                font-size: 1.5rem;
+                margin-left: 10px;
+            }
+            .font2 {
+                font-size: 2.5rem;
+                margin-left: 95px;
+                margin-top: -30px;
+            }
+            .font3 {
+                font-size: 1rem;
+                margin-left: 150px;
+                margin-top: -30px;
+            }
+            .font4 {
+                font-size: 1.5rem;
+                margin-left: 10px;
+            }
+            .font5 {
+                font-size: 2.5rem;
+                margin-left: 145px;
+                margin-top: -30px;
+            }
+            .font6 {
+                font-size: 1rem;
+                margin-left: 10px;
+            }
+            .font7 {
+                font-size: 2.5rem;
+                margin-left: 105px;
+                margin-top: -30px;
+            }
+            .font8 {
+                font-size: 1rem;
+                margin-left: 90px;
+                margin-top: -30px;
+            }
+            .chart1{
+               height:200px; 
+               width:300px;
+            }
+            #fillgauge1{
+                margin-left: -3%;
+                width:13%;
+                height: 55%;
+            }
+             #fillgauge2{
+                width:13%;
+                height: 55%;
+            }
+             #fillgauge3{
+                width:13%;
+                height: 55%;
+            }
+             #fillgauge4{
+                width:13%;
+                height: 55%;
+            }
+            .wet{
+                margin-left: 118px;
+            }
+            .gd{
+                margin-left:-10%;
+            }
+            .mor{
+                margin-left:4.5%;
+                margin-top:-27px;
+            }
+            .aft{
+                margin-left:18%;
+                margin-top:-28px;
+            }
+            .ni{
+                margin-left:33%; 
+                margin-top:-27px;
+            }
+        }
+    </style>
+    <script>
+    $(document).ready(function() {
+         var member=Cookies.get('user');
+         var user=document.getElementById('member')
+         console.log(member)
+         var memberHtml="";
+         
+         if(member!="test"){
+                memberHtml+="<span class='dropdown-toggle'><span class=mif-user></span>"+member+ "</span><div class='app-bar-drop-container padding10 place-right no-margin-top block-shadow fg-dark' data-role=dropdown data-no-close=true style=width: 100px;> <ul class='unstyled-list fg-dark'><li><a href='change_pas.html' class='fg-white fg-hover-yellow'>變更密碼</a></li><li><a onclick=Logout() class='fg-white fg-hover-yellow'>登出</a></li></ul></div>"
+         }
+         else{
+             memberHtml+="<span class='dropdown-toggle active-toggle'><span class=mif-user></span>試用者</span>"
+         }
+        user.innerHTML=memberHtml
+        if(navigator.geolocation){
+                navigator.geolocation.getCurrentPosition(showPosition,showError);
+        }
+        else{
+                 alert('不支援地理定位,請換瀏覽器');
+        }
+        function showPosition(position){
+             var x=position.coords.latitude;
+             var y=position.coords.longitude;
+             var key="AIzaSyBW3eAYma10UoHCAyv63yvgQ7tmlquOCKs";
+             var ul="https://maps.googleapis.com/maps/api/geocode/json?latlng="+x+","+y+"&result_type=administrative_area_level_1"+"&key="+key;   
+             $.ajax({
+                url:ul,
+                dataType:"json",
+                type:'get',
+                success:function(data){
+                   if(data['status']=="OK"){
+                      var len=data['results'].length;
+                      var loc=data['results'][0]['address_components'][0].long_name;
+                      switch(loc){
+                        case "台北市":
+                        case "臺北市":
+                            weather("1");
+                            today("1");
+                            console.log("Taipei");
+                            loc2("台北")
+                            break;
+                        case "新北市":
+                            weather("1");
+                            today("1");
+                            loc2("新北")
+                            break;
+                        case "台中市":
+                        case "臺中市":
+                            weather("2");
+                            today("2");
+                            console.log("Tai");
+                            loc2("台中")
+                            break;
+                        case "高雄市":
+                          
+                            weather("3");
+                            today("3");
+                            loc2("高雄")
+                            break;
+                       }      
+                   }
+                   else{
+                       alert("定位出現問題");
+                   }  
+                }
+             });
+        }
+        function showError(error){
+            switch(error.code) 
+            {    
+             case error.PERMISSION_DENIED:
+                 alert("拒絕地理位置的請求")
+                 break;
+             case error.POSITION_UNAVAILABLE:
+                 alert("位置是不可用的")
+                 break;
+             case error.TIMEOUT:
+                 alert("超時")
+                 break;
+             case error.UNKNOWN_ERROR:
+                 alert("位置錯誤")
+                 break;
+          }
+          select(2)
+          loc2("台中")
+        }  
+    });
+    function Logout(){
+        Cookies.remove('user');
+        window.location.href="login.html"
+    }
+    function select(i){
+        console.log(i)
+        
+        switch(i){
+            case 1:
+                today(1);
+                weather(1);
+                loc2("台北")
+                break;
+            case 2:
+                today(2);
+                weather(2);
+                console.log(2)
+                loc2("台中")
+                break;
+            case 3:
+                today(3);
+                weather(3);
+                loc2("高雄")
+                break;
+            case 4:
+                today(1);
+                weather(1);
+                loc2("新北")
+                break;
+        }
+        
+    }
+    function loc2(id){
+        var id2=id
+        if(id=="台中"){
+            document.body.style.background ="#2e80ab"
+        }
+        else if(id=="高雄"){
+             document.body.style.background ="#647687"
+             
+        }
+        else if(id=="台北"){
+            document.body.style.background ="#6d8764"
+        }
+        else{
+            document.body.style.background ="#004050"
+            id="台北"
+        }
+        $.ajax({ 
+            url:"GetPlace.php",
+               dataType:"json",
+               data:"&x="+id,
+               type:'post',
+               success:function(data){
+                   //console.log(data)
+                   
+                   var Today=new Date();
+                   var x=Math.floor(Math.random()*20+1)
+                   var y=document.getElementById("title")
+                   var html=id2+"市-"+data[x].name+"-"+(Today.getMonth()+1)+"/"+Today.getDate()+"-"+"今日天氣 <a class='button success' onclick='select(1)'>台北市</a><a class='button bg-violet bg-active-violet fg-white' onclick='select(4)'>新北市</a><a class='button warning' onclick='select(2)'>台中市</a><a class='button danger' onclick='select(3)'>高雄市</a><span class='mif-weather place-right'></span>"
+                   y.innerHTML=html;
+               }
+        })
+    }
+    function today(ul){
+         $.ajax({   
+               url:"TodayWeather.php",
+               dataType:"json",
+               data:"&today="+ul,
+               type:'post',
+               success:function(data){
+                    //console.log(data);
+                    var AvgPs=new Array(4);
+                    var AvgRh=new Array(4);
+                    var Tx=[];
+
+                    var x=document.getElementById("today2");
+                    var html="<div class=tile-content> <div class=wet>平均濕度</div><div style='margin-top:1.5%; margin-left:35px;'><svg id=fillgauge1 width=22.5% height=55%></svg><svg id=fillgauge2 width=22.5% height=55%></svg><svg id=fillgauge3 width=22.5% height=55%></svg><svg id=fillgauge4 width=22.5% height=55%></svg><div style='margin-left:8%; font-size:25px;'><div class=gd>午夜</div><div class=mor>早上</div><div class=aft>下午</div> <div class=ni>晚上</div></div></div></div>"
+                    var len=data.length;
+                    for(var i=0;i<4;i++){
+                        AvgPs[i]=0;
+                        AvgRh[i]=0;
+                    }
+                    
+                    console.log(Tx)
+                    for(var i=0;i<len;i++){
+                        Tx.push(parseFloat(data[i].Tx))
+                        if(data[i].hr<6||data[i].hr==24){  
+                            AvgPs[0]+=parseFloat(data[i].PS);
+                            AvgRh[0]+=parseFloat(data[i].RH);
+                        }
+                        else if(data[i].hr>=6&&data[i].hr<12){
+                            AvgPs[1]+=parseFloat(data[i].PS)
+                            AvgRh[1]+=parseFloat(data[i].RH)
+                        }
+                        else if(data[i].hr>=12&&data[i].hr<18){
+                            AvgPs[2]+=parseFloat(data[i].PS)
+                            AvgRh[2]+=parseFloat(data[i].RH);
+                        }
+                        else if(data[i].hr>=18&&data[i].hr<24){
+                            AvgPs[3]+=parseFloat(data[i].PS)
+                            AvgRh[3]+=parseFloat(data[i].RH);
+                        }
+                    }
+                    
+                    for(var i=0;i<4;i++){
+                        AvgPs[i]=Math.round(AvgPs[i]/6);
+                        AvgRh[i]=Math.round(AvgRh[i]/6);
+                    }
+                   // console.log(AvgPs)
+                   // console.log(AvgRh)
+                    x.innerHTML=html;
+                    var config2 = liquidFillGaugeDefaultSettings();
+                    /*config1.circleColor = "#FF7777";
+                    config1.textColor = "#FF4444";
+                    config1.waveTextColor = "#FFAAAA";
+                    config1.waveColor = "#FFDDDD";*/
+                    config2.circleThickness = 0.1;
+                    config2.circleFillGap = 0.2;
+                    config2.textVertPosition = 0.8;
+                    config2.waveAnimateTime = 2000;
+                    config2.waveHeight = 0.3;
+                    config2.waveCount = 1;
+                    var gauge1 = loadLiquidFillGauge("fillgauge1", AvgRh[0],config2);
+                    var gauge2= loadLiquidFillGauge("fillgauge2", AvgRh[1], config2);
+                    var gauge3= loadLiquidFillGauge("fillgauge3", AvgRh[2], config2);
+                    var gauge4= loadLiquidFillGauge("fillgauge4", AvgRh[3], config2);
+                    
+                    /*var ctx = document.getElementById("myChart");
+                    //長條圖--氣壓
+                    var data = {
+                        labels: ["ACCU", "我預測", "CWB"],
+                        datasets: [
+                        {
+                            label: "四月降雨統計",
+                            fill: true,
+                            lineTension: 0.1,
+                            backgroundColor: "rgba(75,192,192,0.4)",
+                            borderColor: "rgba(75,192,192,1)",
+                            borderCapStyle: 'butt',
+                            borderDash: [],
+                            borderDashOffset: 0.0,
+                            borderJoinStyle: 'miter',
+                            pointBorderColor: "rgba(75,192,192,1)",
+                            pointBackgroundColor: "#fff",
+                            pointBorderWidth: 1,
+                            pointHoverRadius: 5,
+                            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                            pointHoverBorderColor: "rgba(220,220,220,1)",
+                            pointHoverBorderWidth: 2,
+                            pointRadius: 3,
+                            pointHitRadius: 10,
+                            data: AvgPs,
+                            spanGaps: false,
+                            }
+                        ]
+                    };
+                    var myLineChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: data,
+                        options:{
+                            scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero:true,
+                                    responsive: true
+                                }   
+                            }]
+                            }
+                        }
+                    });*/
+                    //折線圖--氣溫
+                    
+                    var ctx = document.getElementById("myChart1");
+                    var data = {
+                            labels: ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"],
+                            datasets: [
+                                        {
+                                        label: "24小時氣溫",
+                                        fill: true,
+                                        lineTension: 0.1,
+                                        backgroundColor: "rgba(141,40,52,0.4)",
+                                        borderColor: "rgba(141,40,52,1)",
+                                        borderCapStyle: 'butt',
+                                        borderDash: [],
+                                        borderDashOffset: 0.0,
+                                        borderJoinStyle: 'miter',
+                                        pointBorderColor: "rgba(75,192,192,1)",
+                                        pointBackgroundColor: "#fff",
+                                        pointBorderWidth: 1,
+                                        pointHoverRadius: 5,
+                                        pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                                        pointHoverBorderColor: "rgba(220,220,220,1)",
+                                        pointHoverBorderWidth: 5,
+                                        pointRadius: 3,
+                                        pointHitRadius: 15,
+                                        data: Tx,
+                                        spanGaps: false,
+                                        }
+                            ]
+                    };
+                    var myLineChart = new Chart(ctx, {
+                        type: 'line',
+                        data: data,
+                        options:{
+                            scales: {
+                                xAxes: [{
+                                    display: true
+                                }],
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero:true,
+                                        responsive: true
+                                    }   
+                            }]
+                            }
+                        }
+                    });
+                   /* var margin = {top: 60, right: 40, bottom: 50, left: 60};
+                    var w = 1150 ; // 寬
+                    var h = 250 ; // 高
+                    var Num = 20
+                    var Ymax = d3.max(Tx),
+	                    Ymin = d3.min(Tx);
+                    var xScale = d3.scale.linear().domain([1, Tx.length]).range([0, w]);
+                    var yScale = d3.scale.linear().domain([Ymin, Ymax]).range([h, 0]);
+                    var line = d3.svg.line()
+	                        .x(function(d,i) { 
+		                        return xScale(i + 1); 
+	                        })
+	                        .y(function(d) { 
+		                        return yScale(d);
+	                        });
+                            var svg = d3.select('#line_demo').append('svg')
+	                                .attr('width', w + margin.left + margin.right) 
+	                                .attr('height', h + margin.top + margin.bottom) 
+	                                .append('g')
+	                                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                                    var xAxis = d3.svg.axis().scale(xScale).orient('bottom').tickSize(-h).tickSubdivide(true);
+                                    svg.append('g')
+	                                    .attr('class', 'x axis')
+	                                    .attr('transform', 'translate(0,' + h + ')')
+	                                    .call(xAxis);
+                                    var yAxisLeft = d3.svg.axis().scale(yScale).ticks(8).orient('left');
+                                    svg.append('g')
+	                                    .attr('class', 'y axis')
+	                                    .attr('transform', 'translate(0,0)')
+	                                    .call(yAxisLeft);			
+                                    svg.append('path').attr("id","path2").attr('d', line(Tx));*/
+               }
+        }); 
+        $.ajax({   
+                url:"rather_weather.php",
+                dataType:"json",
+                data:"&x="+ul,
+                type:'post',
+                success:function(data){
+                        var rain=[];
+                        var rain2=[]
+                        console.log(data)
+                        rain[0]=parseInt(data[0].accu)/parseInt(data[0].cwb)*100
+                        rain[1]=parseInt(data[0].me)/parseInt(data[0].cwb)*100
+                        rain[2]=parseInt(data[0].cwb)/parseInt(data[0].cwb)*100
+
+                        /*if(rain[2]-rain[0]>0){
+                            rain[0]=rain[0]/rain[2]*100
+                        }
+                        else{
+                            var dis=rain[0]-rain[2]
+                            rain[0]=(rain[0]-dis*2)/rain[2]*100   
+                        }
+                        if(rain[2]-rain[1]>0){
+                            rain[1]=rain[1]/rain[2]*100
+                        }
+                        rain[2]=rain[2]/rain[2]*100*/
+                           
+                        var ctx = document.getElementById("myChart");
+                        var data = {
+                            labels: ["ACCU", "天氣亂入輕旅行", "中央氣象局"],
+                            datasets: [
+                            {
+                                label: "前月降雨預測正確率",
+                                fill: true,
+                                lineTension: 0.1,
+                                backgroundColor: "rgba(75,192,192,0.4)",
+                                borderColor: "rgba(75,192,192,1)",
+                                borderCapStyle: 'butt',
+                                borderDash: [],
+                                borderDashOffset: 0.0,
+                                borderJoinStyle: 'miter',
+                                pointBorderColor: "rgba(75,192,192,1)",
+                                pointBackgroundColor: "#fff",
+                                pointBorderWidth: 1,
+                                pointHoverRadius: 5,
+                                pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                                pointHoverBorderColor: "rgba(220,220,220,1)",
+                                pointHoverBorderWidth: 2,
+                                pointRadius: 3,
+                                pointHitRadius: 10,
+                                data: rain,
+                                spanGaps: false,
+                            }
+                            ]
+                        };
+                        var myLineChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: data,
+                            options:{
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero:true,
+                                            responsive: true
+                                        }   
+                                    }]
+                                }
+                            }
+                        });
+                    }
+                });
+    }
+    function weather(ul){
+            $.ajax({   
+               url:"Today.php",
+               dataType:"json",
+               data:"&today="+ul,
+               type:'post',
+               success:function(data){
+                   console.log(data);
+                   var x=document.getElementById("today");
+                   var str="";
+                   var str2="";
+                   if(data[0].MinTx>=18&&data[0].MinTx<=23){
+                       str="舒適"
+                   }
+                   else if(data[0].MinTx>23&&data[0].MinTx<40){
+                        str="炎熱"
+                   }
+                   else{
+                       str="寒冷"
+                   }
+                    if(data[0].AvgRh>=20&&data[0].AvgRh<=39){
+                       str2="乾燥"
+                   }
+                   else if(data[0].AvgRh>40&&data[0].AvgRh<70){
+                        str2="舒適濕度"
+                   }
+                   else{
+                       str2="潮濕"
+                   }
+                   var html="<div class='tile-content iconic'><br><div class=font1>參考溫度<div class=font2>"+data[0].MinTx+"°~"+data[0].MaxTx+"°<div class=font3>("+str+")</div></div></div><br><div class=font4>參考平均氣壓<div class=font5>"+data[0].AvgPs+"</div></div><br><div class=font6>參考平均濕度<div class=font7>"+data[0].AvgRh+"%<div class=font8>("+str2+")</div></div></div>";
+                   if(data[0].Rain==0){
+                       html+="<img  style='color: #FAD543; margin-top:40px;margin-left: 40px;  width:75%; ' src=main.png></img>";
+                   }
+                   else{
+                       html+="<img  style='font-size: 250px;margin-top:40px;margin-left: 40px;width:75%;' src=main2.png ></img>";
+                   }
+                   x.innerHTML=html;
+               }
+            });
+
+        }
+    
+    function GetApi(ul){
+            $.ajax({
+               url:ul,
+               dataType:"json",
+                success:function(data){
+                    var len=data.length;
+                        var Html="<div id=tenday style=display:none><div class='fg-white'><h1 id='location' class='margin40'></h1><h2 class='margin40'>10天預測:</h2></div><div style='margin-left: 2.5rem;'>"
+                         var date = new Date();
+                        var day  = date.getDay();
+                        console.log(data);
+                        for(var i=0;i<len;i++){
+                            //產生10天天氣
+                            var day_list = ['日', '一', '二', '三', '四', '五', '六'];
+                            Html+="<div><div class='tile fg-grayDarker bg-white'><div class='tile-content iconic' id=weather"+i+"> <h3>"+data[i].month+"月"+data[i].day+"日"+" 星期"+day_list[(day++)%7]+"</h3>"
+                            if(data[i].Rain==0){
+                                Html+="<img  style='color: #FAD543; margin-top:-13px;margin-left: 50px;  width:50%; ' src=main.png></img>"
+                            }
+                            else{
+                                Html+="<img  style='color: #FAD543; margin-top:-13px;margin-left: 50px;  width:50%; ' src=main2.png></img>"
+                            }
+
+                            Html+="<p class='Tx'>"+data[i].MinTx+"°C~"+data[i].MaxTx+"°C</p></div></div>"
+                        }
+                        Html+="</div></div>";
+                        document.getElementById("cell-content").innerHTML=Html;
+                        GetApi2(ul)
+                        $("#tenday").show(1000);
+                        switch(ul){
+                            case "Taipei_All_api.php":
+                                document.getElementById("location").innerHTML+="目前位置: 台北市";
+                                break;
+                            case "Taichung_All_api.php":   
+                                document.getElementById("location").innerHTML+="目前位置: 台中市";
+                                break;
+                            case "Kaohsiung_All_api.php":
+                                document.getElementById("location").innerHTML+="目前位置: 高雄市";
+                                break;
+                        }
+                }
+          });
+        }
+    function GetApi2(ul){
+        $.ajax({
+               url:'Get_All_weather_prediction.php',
+               dataType:"json",
+               success:function(data){
+                   console.log(data);
+                   switch(ul){
+                        case "Taipei_All_api.php":
+                            for(var i=0;i<data.length;i++){
+                                var html="";
+                                var x=document.getElementById("weather"+i)
+                                if(data[i].accu_taipei=="0"){
+                                     html="<div style='margin-top: 10%;'><img src=AccuWeather_Logo.svg.png class='accu'></img><span class='mif-sun mif-3x' style='color:#FAD543;margin-left: 15%;'></span></div>"
+                                }
+                                else{
+                                     html="<div style='margin-top: 10%;'><img src=AccuWeather_Logo.svg.png class='accu'></img><span class='mif-rainy mif-3x fg-cyan' style='margin-left: 15%;'></span></div>"
+                                }
+                                if(data[i].foreca_taipei=="0"){
+                                    html+="<div><img src=weather.png class='thechannel'></img><span class='mif-sun mif-3x' style='color:#FAD543;margin-left: 46%;'></span></div>"
+                                }
+                                else{
+                                    html+="<div><img src=weather.png class='thechannel'></img><span class='mif-rainy mif-3x fg-cyan' style='margin-left: 46%;'></div>"
+                                }
+                                if(data[i].weather_channel_taipei=="0"){
+                                     html+="<div><img src=Foreca_logo.png class='Foreca'></img><span class='mif-sun mif-3x' style='color:#FAD543;margin-left: 34%;'></span></div>"
+                                }
+                                else{
+                                     html+="<div><img src=Foreca_logo.png class='Foreca'></img><span class='mif-rainy mif-3x fg-cyan' style='margin-left: 34%;'></div>"
+                                }
+                                x.innerHTML+=html
+                            }
+                            break;
+                       case "Taichung_All_api.php":   
+                            for(var i=0;i<data.length;i++){
+                                var html="";
+                                var x=document.getElementById("weather"+i)
+                                if(data[i].accu_taichung=="0"){
+                                     html="<div style='margin-top: 10%;'><img src=AccuWeather_Logo.svg.png class='accu'></img><span class='mif-sun mif-3x' style='color:#FAD543;margin-left: 15%;'></span></div>"
+                                }
+                                else{
+                                     html="<div style='margin-top: 10%;'><img src=AccuWeather_Logo.svg.png class='accu'></img><span class='mif-rainy mif-3x fg-cyan' style='margin-left: 15%;'></span></div>"
+                                }
+                                if(data[i].weather_channel_taichung=="0"){
+                                    html+="<div><img src=weather.png class='thechannel'></img><span class='mif-sun mif-3x' style='color:#FAD543;margin-left: 46%;'></span></div>"
+                                }
+                                else{
+                                    html+="<div><img src=weather.png class='thechannel'></img><span class='mif-rainy mif-3x fg-cyan' style='margin-left: 46%;'></div>"
+                                }
+                                if(data[i].foreca_taichung=="0"){
+                                     html+="<div><img src=Foreca_logo.png class='Foreca'></img><span class='mif-sun mif-3x' style='color:#FAD543;margin-left: 34%;'></span></div>"
+                                }
+                                else{
+                                     html+="<div><img src=Foreca_logo.png class='Foreca'></img><span class='mif-rainy mif-3x fg-cyan' style='margin-left: 34%;'></div>"
+                                }
+                                x.innerHTML+=html
+                            }
+                                break;
+                        case "Kaohsiung_All_api.php":
+                            for(var i=0;i<data.length;i++){
+                                var html="";
+                                var x=document.getElementById("weather"+i)
+                                if(data[i].accu_Kao=="0"){
+                                     html="<div style='margin-top: 10%;'><img src=AccuWeather_Logo.svg.png class='accu'></img><span class='mif-sun mif-3x' style='color:#FAD543;margin-left: 15%;'></span></div>"
+                                }
+                                else{
+                                     html="<div style='margin-top: 10%;'><img src=AccuWeather_Logo.svg.png class='accu'></img><span class='mif-rainy mif-3x fg-cyan' style='margin-left: 15%;'></span></div>"
+                                }
+                                if(data[i].weather_channel_Kao=="0"){
+                                    html+="<div><img src=weather.png class='thechannel'></img><span class='mif-sun mif-3x' style='color:#FAD543;margin-left: 46%;'></span></div>"
+                                }
+                                else{
+                                    html+="<div><img src=weather.png class='thechannel'></img><span class='mif-rainy mif-3x fg-cyan' style='margin-left: 46%;'></div>"
+                                }
+                                if(data[i].foreca_Kao=="0"){
+                                     html+="<div><img src=Foreca_logo.png class='Foreca'></img><span class='mif-sun mif-3x' style='color:#FAD543;margin-left: 34%;'></span></div>"
+                                }
+                                else{
+                                     html+="<div><img src=Foreca_logo.png class='Foreca'></img><span class='mif-rainy mif-3x fg-cyan' style='margin-left: 34%;'></div>"
+                                }
+                                x.innerHTML+=html
+                            }
+                                break;
+                        }
+                }
+        });
+    }
+    
+</script>
+</head>
+
+<body>
+    <div class="app-bar fixed-top bg-black darcula" data-role="appbar">
+        <a class="app-bar-element " href="login.html">天氣亂入輕旅行</a>
+        <ul class="app-bar-menu">
+            <li data-flexorderorigin="0" data-flexorder="1"><a href="index.html">今日天氣</a></li>
+            <li data-flexorderorigin="1" data-flexorder="2">
+                <a href="" class="dropdown-toggle">10日預報</a>
+                <ul class="d-menu" data-role="dropdown">
+                    <li><a onclick="GetApi('Taipei_All_api.php')">台北市</a></li>
+                    <li><a onclick="GetApi('Taichung_All_api.php')">台中市</a></li>
+                    <li><a onclick="GetApi('Kaohsiung_All_api.php')">高雄市</a></li>
+                </ul>
+            </li>
+            <li data-flexorderorigin="2" data-flexorder="3">
+                <a href="" class="dropdown-toggle">旅遊規劃</a>
+                <ul class="d-menu" data-role="dropdown">
+                    <li><a href="trip.html">自動規劃</a></li>
+                    <li><a href="control_trip.html">手動規劃</a></li>
+                     <li><a href="Member_trip.html">參考旅遊</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="app-bar-element place-right active-container" id="member">
+            <span class="dropdown-toggle active-toggle"><span class="mif-cog"></span>試用者</span>
+            
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="flex-grid" style="height: 100%;">
+            <div class="row" style="height: 100%">
+                <div class="cell auto-size padding20" id="cell-content">
+                    <h1 class="text-light margin20 fg-white" id="title">今日天氣
+                        
+                    </h1>
+                    <hr class="thin bg-white">
+                    <div class="today-content">
+                        <div class="tile-large" id="today">
+                        </div>
+                        <div class="tile-square" style="height:250px; width:595px" id="today2">
+
+                        </div>
+                        <div class="tile-square" id="today2">
+                            <div class="tile-content">
+                                <div class="chart1">
+                                    <canvas id="myChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tile-square" id="today3">
+                            <div class="tile-content">
+                                <div class="chart2">
+                                    <canvas id="myChart1" width="900" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+
+</html>

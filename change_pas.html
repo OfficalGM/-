@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<link href="css/metro-responsive.css" rel="stylesheet">
+	<link href="css/metro.css" rel="stylesheet">
+	<link href="css/metro-icons.css" rel="stylesheet">
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="js/metro.js"></script>
+	<script src="js.cookie.js"></script>
+	<style type="text/css">
+		:root .adsbygoogle {
+			display: none !important;
+		}
+		
+		.login-form {
+			width: 25rem;
+			height: 23.75rem;
+			position: fixed;
+			top: 50%;
+			margin-top: -9.375rem;
+			left: 50%;
+			margin-left: -12.5rem;
+			background-color: #ffffff;
+			opacity: 0;
+			-webkit-transform: scale(.8);
+			transform: scale(.8);
+		}
+		
+		
+	</style>
+	<script>
+        function Asuccess(){
+            var email=document.getElementById("user_login").value
+            var pas=document.getElementById("user_password").value
+            var change_pas=document.getElementById("change_pas").value
+            var change_pas2=document.getElementById("change_pas2").value
+            var emailRule = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/;
+            if(email.search(emailRule)!=-1&&pas!=""&&change_pas==change_pas2){
+                $.ajax({
+                     url:"change_pasword.php",
+                     dataType:"json",
+                     type:'post',
+				     data:"&Name="+email+"&pas="+pas+"&pas2="+change_pas,
+                     success:function(data){
+                        if(data.success==0){
+						    $.Notify({
+							    caption: '失敗',
+							    content: '',
+							    timeout:3000,
+							    type: 'alert'
+						    });
+					    }
+					    else{
+                            Cookies.remove('user')
+						    $.Notify({
+    						    caption: '變更成功',
+    						    content: '3秒後跳轉頁面',
+							    timeout:3000,
+    						    type: 'success'
+						    });
+						    var t=setTimeout("window.location.href='Login.html'",3000)
+					    }
+                     }
+                });
+            }
+            else{
+                $.Notify({
+						caption: '失敗',
+						content: '變更密碼錯誤',
+						timeout:2000,
+						type: 'alert'
+					});
+            }
+        }
+	</script>
+</head>
+
+<body class="bg-darkCyan">
+	<div class="login-form padding20 block-shadow" style="opacity: 1; transform: scale(1); transition: 0.5s;">
+		<form id="ff">
+			<h1 class="text-light">變更密碼</h1>
+			<hr class="thin">
+			<br>
+			<div class="input-control text full-size" data-role="input">
+				<label for="user_login">使用者email:</label>
+				<input type="text" name="user_login" id="user_login" style="padding-right: 42px;">
+				<button class="button helper-button clear" tabindex="-1" type="button"><span class="mif-cross"></span></button>
+			</div>
+			<br>
+			<br>
+			<div class="input-control password full-size" data-role="input">
+				<label for="user_password">使用者原密碼:</label>
+				<input type="password" name="user_password" id="user_password" style="padding-right: 42px;">
+				<button class="button helper-button reveal" tabindex="-1" type="button"><span class="mif-looks"></span></button>
+			</div>
+			<br>
+			<br>
+            <div class="input-control password full-size" data-role="input">
+				<label for="user_password">變更密碼:</label>
+				<input type="password" name="user_password" id="change_pas" style="padding-right: 42px;">
+				<button class="button helper-button reveal" tabindex="-1" type="button"><span class="mif-looks"></span></button>
+			</div>
+            <br>
+            <br>
+            <div class="input-control password full-size" data-role="input">
+				<label for="user_password">確認變更密碼:</label>
+				<input type="password" name="user_password" id="change_pas2" style="padding-right: 42px;">
+				<button class="button helper-button reveal" tabindex="-1" type="button"><span class="mif-looks"></span></button>
+			</div>
+			<div class="form-actions">
+				<button type="button" onclick="Asuccess()" class="button primary">變更密碼</button>
+			</div>
+		</form>
+	</div>
+
+</body>
+
+</html>

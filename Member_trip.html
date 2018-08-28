@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>天氣亂入輕旅行</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link href="css/metro-schemes.css" rel="stylesheet">
+    <link href="css/metro-responsive.css" rel="stylesheet">
+    <link href="css/metro.css" rel="stylesheet">
+    <link href="css/metro-icons.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="js/metro.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="liquidFillGauge.js" language="JavaScript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+    <script src="js.cookie.js"></script>
+    <script src="js/jquery-tablepage-1.0.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <style>
+        html,
+        body {
+            background-color: #2e80ab;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Jhenghei", sans-serif;
+        }
+        
+        .v-menu li a {
+            min-width: 10rem;
+        }
+        
+        .page-content {
+            padding-top: 3.125rem;
+            min-height: 100%;
+            height: 100%;
+        }
+        
+        .today-content {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            margin-top: 110px;
+            margin-left: 120px;
+            position: absolute;
+        }
+        
+        @media screen and (max-width: 800px) {
+            #cell-sidebar {
+                flex-basis: 52px;
+            }
+            body {
+                overflow-y: scroll;
+                overflow-x: scroll;
+            }
+            #cell-content {
+                flex-basis: calc(100% - 52px);
+                height: 100%;
+            }
+            .today-content {
+                height: 900px;
+                position: relative;
+                margin-left: 0px;
+                margin-top: 50px;
+            }
+        }
+    </style>
+    <script>
+    $(document).ready(function() {
+         var member=Cookies.get('user');
+         var user=document.getElementById('member')
+         console.log(member)
+         var memberHtml="";
+         
+         if(member!="test"){
+                memberHtml+="<span class='dropdown-toggle'><span class=mif-user></span>"+member+ "</span><div class='app-bar-drop-container padding10 place-right no-margin-top block-shadow fg-dark' data-role=dropdown data-no-close=true style=width: 100px;> <ul class='unstyled-list fg-dark'><li><a href='change_pas.html' class='fg-white fg-hover-yellow'>變更密碼</a></li><li><a onclick=Logout() class='fg-white fg-hover-yellow'>登出</a></li></ul></div>"
+         }
+         else{
+             memberHtml+="<span class='dropdown-toggle active-toggle'><span class=mif-user></span>試用者</span>"
+         }
+        user.innerHTML=memberHtml
+        GetGuest()
+        if(member!="test"&&typeof member!='undefined'&&member!="試用者"){ 
+            GetData(member)
+        }   
+            
+    });
+    function Logout(){
+        Cookies.remove('user');
+        window.location.href="login.html"
+    }
+    function GetData(member){
+         var x=document.getElementById("cell-content")
+         x.innerHTML+="<h2 class='fg-white'>會員參考旅遊</h2><br><table class='table striped hovered border cell-hovered bordered bg-white' id=table2 ><thead><tr> <th>序號</th><th>第幾天</th><th>景點1</th><th>景點2</th><th>景點3</th> <th>景點5</th><th>景點6</th> <th>景點7</th><th>景點8</th></tr>   </thead><tbody id=table3>"
+         $.ajax({ 
+            url:"GetTrip.php",
+            dataType:"json",
+            data:"&m="+member,
+            type:'post',
+            success:function(data){
+                console.log(data)
+                var x=document.getElementById("table3");
+                var html="";
+                for(var i=0;i<data.length;i++){ 
+                    html+= "<tr><td>"+data[i].Job+"-"+data[i].day+"</td><td>"+data[i].day+"</td><td>"+data[i].trip1+"</td><td>"+data[i].trip2+"</td>";
+                    if(data[i].trip3!="0"){
+                        html+="<td>"+data[i].trip3+"</td>"
+                    }
+                    else{
+                        html+="<td>未規劃</td>"
+                    }
+                    if(data[i].trip4!="0"){
+                        html+="<td>"+data[i].trip4+"</td>"
+                    }
+                    else{
+                        html+="<td>未規劃</td>"
+                    }
+                    if(data[i].trip5!="0"){
+                        html+="<td>"+data[i].trip5+"</td>"
+                    }
+                    else{
+                        html+="<td>未規劃</td>"
+                    }
+                    if(data[i].trip6!="0"){
+                        html+="<td>"+data[i].trip6+"</td>"
+                    }
+                    else{
+                        html+="<td>未規劃</td>"
+                    }
+                    if(data[i].trip7!="0"){
+                        html+="<td>"+data[i].trip7+"</td>"
+                    }
+                    else{
+                        html+="<td>未規劃</td>"
+                    }
+                    if(data[i].trip8!="0"){
+                        html+="<td>"+data[i].trip8+"</td>"
+                    }
+                    else{
+                        html+="<td>未規劃</td>"
+                    }
+                   html+="</tr>"
+                }
+                html+="</tbody></table>"
+                x.innerHTML=html;
+                document.getElementById("cell-content").innerHTML+="<span id='table_page2'></span>"
+                $("#table2").tablepage($("#table_page2"), 5);
+            }
+         });
+    }
+    function GetGuest(){
+        $.ajax({ 
+            url:"GetGuest.php",
+            dataType:"json",
+            type:'post',
+            success:function(data){
+                //console.log(data)
+                var x=document.getElementById("table1");
+                var html="";
+                console.log(data.length)
+                for(var i=0;i<data.length;i++){
+                    html+="<tr><td>"+data[i].Rand+"-"+data[i].day+"</td><td>"+data[i].day+"</td><td>"+data[i].trip1+"</td><td>"+data[i].trip2+"</td>";
+                    if(data[i].trip3!=0){
+                        html+="<td>"+data[i].trip3+"</td>"
+                    }
+                    else{
+                        html+="<td>未規劃</td>"
+                    }
+                    if(data[i].trip4!=0){
+                        html+="<td>"+data[i].trip4+"</td>"
+                    }
+                    else{
+                        html+="<td>未規劃</td>"
+                    }
+                    if(data[i].trip5!=0){
+                        html+="<td>"+data[i].trip5+"</td>"
+                    }
+                    else{
+                        html+="<td>未規劃</td>"
+                    }
+                    if(data[i].trip6!=0){
+                        html+="<td>"+data[i].trip6+"</td>"
+                    }
+                    else{
+                        html+="<td>未規劃</td>"
+                    }
+                    if(data[i].trip7!=0){
+                        html+="<td>"+data[i].trip7+"</td>"
+                    }
+                    else{
+                        html+="<td>未規劃</td>"
+                    }
+                    if(data[i].trip8!=0){
+                        html+="<td>"+data[i].trip8+"</td>"
+                    }
+                    else{
+                        html+="<td>未規劃</td>"
+                    }
+                   html+="<td><a class='button warning' href=DirctionMap2.html?MD="+data[i].MD5+"&day="+data[i].day+">點開網站</a></td></tr>"
+                }
+                x.innerHTML=html;
+                $("#table").tablepage($("#table_page"), 5);
+               
+            }        
+        });
+    }
+</script>
+</head>
+
+<body>
+    <div class="app-bar fixed-top bg-black darcula" data-role="appbar">
+        <a class="app-bar-element " href="index.html">天氣亂入輕旅行</a>
+        <ul class="app-bar-menu">
+            <li data-flexorderorigin="0" data-flexorder="1"><a href="index.html">今日天氣</a></li>
+            <li data-flexorderorigin="1" data-flexorder="2">
+                <a href="" class="dropdown-toggle">10日預報</a>
+                <ul class="d-menu" data-role="dropdown">
+                    <li><a onclick="GetApi('Taipei_All_api.php')">台北市</a></li>
+                    <li><a onclick="GetApi('Taichung_All_api.php')">台中市</a></li>
+                    <li><a onclick="GetApi('Kaohsiung_All_api.php')">高雄市</a></li>
+                </ul>
+            </li>
+            <li data-flexorderorigin="2" data-flexorder="3">
+                <a href="" class="dropdown-toggle">旅遊規劃</a>
+                <ul class="d-menu" data-role="dropdown">
+                    <li><a href="trip.html">自動規劃</a></li>
+                    <li><a href="control_trip.html">手動規劃</a></li>
+                    <li><a href="Member_trip.html">參考旅遊</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="app-bar-element place-right active-container" id="member">
+            <span class="dropdown-toggle active-toggle"><span class="mif-cog"></span>試用者</span>
+
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="flex-grid" style="height: 100%;">
+            <div class="row" style="height: 100%">
+                <div class="cell auto-size padding20" id="cell-content">
+                    <h2 class="fg-white">參考旅遊</h2>
+                    <br>
+                    <table class="table striped hovered border cell-hovered bordered bg-white " id="table">
+                        <thead>
+                            <tr>
+                                <th>序號</th>
+                                <th>第幾天</th>
+                                <th>景點1</th>
+                                <th>景點2</th>
+                                <th>景點3</th>
+                                <th>景點4</th>
+                                <th>景點5</th>
+                                <th>景點6</th>
+                                <th>景點7</th>
+                                <th>景點8</th>
+                                <th>網址</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table1">
+                            <tr>
+
+                            </tr>
+                            <tr>
+
+                            </tr>
+                            <tr>
+
+                            </tr>
+                            <tr>
+
+                            </tr>
+                            <tr>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <span id='table_page'></span>
+
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

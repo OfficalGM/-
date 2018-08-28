@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+    <title>天氣亂入輕旅行</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link href="css/metro-schemes.css" rel="stylesheet">
+    <link href="css/metro-responsive.css" rel="stylesheet">
+    <link href="css/metro.css" rel="stylesheet">
+    <link href="css/metro-icons.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="js.cookie.js"></script>
+    <script type = "text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBW3eAYma10UoHCAyv63yvgQ7tmlquOCKs"> </script>
+    <style>
+        html,
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Jhenghei", sans-serif;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+           
+        }
+        .app-bar{
+            width:85%;
+        }
+        #map {
+            width: 85%;
+            left: 0%;
+            top: -0%;
+            height: 95.5%;
+            
+        }
+        #right-panel{
+            background-color: #fff;
+            height: 100%;
+            left: 85%;
+            top:0%;
+            position: fixed;
+            width:15%;
+            overflow-y:auto;
+           
+        }
+        .sun{
+            font-size: 90px;
+            margin-left: 14%;
+
+            color: #FAD543;
+        }
+        .rain{
+            font-size: 90px;
+            margin-left: 14%;
+        }
+        h3{
+            margin-left: 15px;
+        }
+        .dia{
+            background-color: #2e80ab;
+            width: 85%; 
+            height: auto;
+            left: 0px;
+            top: 50px;
+        }
+       @media screen and (max-width: 800px) {
+           #map{
+               left:0;
+               width:250px;
+           }
+           #right-panel{
+               position: fixed;
+               left:250px;
+               width: 125px;
+           }
+            .app-bar{
+                width:250px;
+            }
+            .dia{
+                overflow: scroll;
+                height: 667px;
+                width:250px;
+            }
+       }
+    </style>
+    <script>
+        var travel2=[],travel3=[];
+
+        var ai=0;
+        $(document).ready(function() {
+            var strUrl = location.search;
+            //console.log(strUrl)
+            if(strUrl.indexOf("?") != -1){
+                //initMap()
+                var code=strUrl.split('MD=')[1].split('&')[0]
+                var day=strUrl.split('MD=')[1].split('day=')[1]
+                console.log(code,day)
+                getNum(code,day)
+            }
+           
+            // initMap()
+       });
+       function getNum(code,day){
+           console.log(code,day)
+           $.ajax({
+                    type:'post',
+                    dataType:"json",
+                    url:'Search_Guest_Trip.php',
+                    data:"&code="+code+"&day="+day,
+                    success:function(data){
+                        console.log(data[0])
+                        var n=0;
+                        
+                        for(var i=0;i<data[0].length;i++){
+                            if(data[0][i]!=0){
+                                n++;
+                                travel3[i]=data[0][i]
+                                getLoc(data[0][i])
+                            }
+                        }
+                        
+                        ai=n;    
+                    }
+                });
+       }
+       function getLoc(label){
+         $.ajax({
+            type:'post',
+            dataType:"json",
+            url:'control_travel.php',
+            data:"&travel="+label,
+            success:function(data){
+                var len=data.length; 
+                var travel={
+                    name:label,
+                    lat:data[0].lat,
+                    lng:data[0].lng
+                }
+                travel2.push(travel)
+                
+                if(ai>=2&&travel2.length==ai){
+                    var travel4=[]
+                    for(var i=0;i<travel2.length;i++){
+                         for(var j=0;j<travel2.length;j++){
+                             if(travel3[i]==travel2[j].name){
+                                travel4[i]={
+                                    lat:travel2[j].lat,
+                                    lng:travel2[j].lng,
+                                    name:travel2[j].name
+                                }
+
+                            }
+                         }
+                     }
+                     travel2=[]
+                     travel2=travel4
+                     //console.log(travel4)
+                     initMap()
+                }
+            }
+            
+        });
+       }
+       
+	   function initMap(){
+            console.log(travel2)
+            var way=[]
+            var directionsService = new google.maps.DirectionsService;
+            var directionsDisplay;
+            for(var i=0;i<travel2.length;i++){
+                travel2[i].lat=parseFloat(travel2[i].lat).toString()
+                travel2[i].lng=parseFloat(travel2[i].lng).toString()
+                way[i]=travel2[i].lat+","+travel2[i].lng
+            }
+            //console.log("1")
+           
+            
+            var  map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 8,
+                center: {lat: 23.9301287 , lng: 121.3559273}
+           });
+           directionsDisplay = new google.maps.DirectionsRenderer({
+                'map': map,
+                'preserveViewport': true,
+                'draggable': true
+            });	
+            //directionsDisplay.setMap(map);
+            directionsDisplay.setPanel(document.getElementById('right-panel'));
+            if(way.length>2){
+                 var start=way[0];
+                 var end=way[way.length-1];
+                 var waypts = [];
+                 for(var i=1;i<way.length-1;i++){
+                     waypts.push({
+                        location: way[i],
+                        stopover: true
+                    });
+                 }
+                 //console.log(typeof start,typeof end,typeof waypts)
+                 //console.log(waypts)
+                 var request = {
+                    origin: start,
+                    destination: end,
+                    waypoints: waypts,
+                    optimizeWaypoints: true,
+                    travelMode: google.maps.DirectionsTravelMode.DRIVING
+                };
+                directionsService.route(request, function(response, status) {
+                //規畫路徑回傳結果
+                    if (status == google.maps.DirectionsStatus.OK) {
+                        directionsDisplay.setDirections(response);
+                    }
+                });
+            }
+           else{
+                var waypts = [];
+                var start=way[0];
+                var end=way[way.length-1]
+                 var request = {
+                    origin: start,
+                    destination: end,
+                    travelMode: google.maps.DirectionsTravelMode.DRIVING
+                };
+                directionsService.route(request, function(response, status) {
+                //規畫路徑回傳結果
+                    if (status == google.maps.DirectionsStatus.OK) {
+                        directionsDisplay.setDirections(response);
+                    }
+                });
+            }
+           
+            
+       }
+              var open=0;
+       function weather(ul){
+           console.log(open)
+           open++;
+           if(open==1){
+            $.ajax({
+               url:ul,
+               dataType:"json",
+               success:function(data){
+                   var x=document.getElementById("dialog-place-top-left");
+                   var html="<div id=weather>";
+                   for(var i=1;i<data.length;i++){
+                       console.log(data[i].month.length)
+                       if(typeof data[i].month.length!='undefined'){
+                            html+="<div class='tile-square'><h3>"+data[i].month+"月"+data[i].day+"日</h3>";
+                       }
+                       else{
+                           html+="<div class='tile-square'><h3>0"+data[i].month+"月"+data[i].day+"日</h3>";
+                       }
+                       if(data[i].Rain==1){
+                            html+="<span class='icon mif-rainy fg-cyan rain'></span></div>"
+                       }
+                       else if(data[i].Rain==0)
+                            html+="<span class='icon mif-sun sun'></span></div>"
+                    }
+                       
+                   
+                   html+="</div>"
+                   open++;
+                   console.log(open)
+                   x.innerHTML+=html;
+                   x.style.visibility ="";
+               }
+            });
+           }
+       }
+        function close_weather(){
+            var x=document.getElementById("dialog-place-top-left");
+            var y=document.getElementById("weather");
+            x.removeChild(y);
+            document.getElementById("dialog-place-top-left").style.visibility ="hidden";
+            open=0;
+       }
+       </script>
+</head>
+
+<body>
+    <div class="app-bar darcula" id="bar">
+         <a class="app-bar-element branding">天氣資訊站</a>
+         <a class="app-bar-element branding" onclick="weather('Taipei_All_api.php')">台北市</a>
+         <a class="app-bar-element branding" onclick="weather('Taichung_All_api.php')">台中市</a>
+         <a class="app-bar-element branding" onclick="weather('Kaohsiung_All_api.php')">高雄市</a>   
+    </div>
+    <div id="map"></div>
+    <div id="right-panel"></div>
+    <div data-role="dialog" id="dialog-place-top-left" class="padding20 dialog dia" data-close-button="true" data-place="top-left" style="visibility: hidden;">
+         
+    <span class="dialog-close-button" onclick="close_weather()"></span></div>
+</body>
+
+</html>

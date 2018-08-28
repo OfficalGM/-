@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link href="css/metro-schemes.css" rel="stylesheet">
+    <link href="css/metro-responsive.css" rel="stylesheet">
+    <link href="css/metro.css" rel="stylesheet">
+    <link href="css/metro-icons.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="js/metro.js"></script>
+    <script src="js.cookie.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Jhenghei", sans-serif;
+             background-color: #2e80ab;
+        }
+        
+        .v-menu li a {
+            min-width: 10rem;
+        }
+        
+        .v-menu li {
+            min-width: 10rem;
+        }
+        
+        body {
+            overflow: hidden;
+        }
+        
+        .page-content {
+            padding-top: 3.125rem;
+            min-height: 100%;
+            height: 100%;
+        }
+        
+        .table .input-control.checkbox {
+            line-height: 1;
+            min-height: 0;
+            height: auto;
+        }
+        
+        @media screen and (max-width: 800px) {
+            #cell-sidebar {
+                flex-basis: 52px;
+            }
+            #cell-content {
+                flex-basis: calc(100% - 52px);
+            }
+            body{
+                overflow-y: scroll;
+            }
+        }
+        
+        .cell {
+            width: 315px;
+            height: 100%;
+        }
+        
+        .window-caption {
+            background-color: #282d32;
+            height: 100%;
+        }
+        
+        .window-content {
+            height: 100%;
+        }
+        
+        .window {
+            background-color: #282d32;
+            height: 100%;
+            width: 95%;
+        }
+        
+        .form1 {
+            margin-top: 50%;
+            margin-left: 5%;
+        }
+        
+        .btnright {
+            margin-left: 55%;
+        }
+        
+        .tile {
+            width: 310px;
+            height: 310px;
+        }
+        
+        .select-form {
+            width: 29rem;
+            height: 23.75rem;
+            position: fixed;
+            top: 50%;
+            margin-top: -12.375rem;
+            left: 50%;
+            margin-left: -12.5rem;
+        }
+        .select-form2{
+             width: 29rem;
+            height: 17.75rem;
+            position: fixed;
+            top: 50%;
+            margin-top: -12.375rem;
+            left: 50%;
+            margin-left: -12.5rem;
+        }
+        
+        .next {
+            position: relative;
+            margin-top: 50%;
+        }
+        
+        .tile-content.iconic .icon {
+            margin-top: -50px;
+            left: 40%;
+            width: 100%;
+            margin-left: -40%;
+        }
+    </style>
+    <script>
+    var Maploc;
+    var date3;
+    var date4;
+    var dt = new Date();
+    function Logout(){
+        Cookies.remove('user');
+        window.location.href="login.html"
+    }
+    $(document).ready(function() {
+         var member=Cookies.get('user');
+         var user=document.getElementById('member')
+         console.log(member)
+         var memberHtml="";
+         if(member!="test"){
+                 memberHtml+="<span class='dropdown-toggle'><span class=mif-user></span>"+member+ "</span><div class='app-bar-drop-container padding10 place-right no-margin-top block-shadow fg-dark' data-role=dropdown data-no-close=true style=width: 100px;> <ul class='unstyled-list fg-dark'><li><a href=# class='fg-white fg-hover-yellow'>變更密碼</a></li><li><a onclick=Logout() class='fg-white fg-hover-yellow'>登出</a></li></ul></div>"
+         }
+         else{
+             memberHtml+="<span class='dropdown-toggle active-toggle'><span class=mif-user></span>試用者</span>"
+         }
+        user.innerHTML=memberHtml
+        var month = dt.getMonth()+1;
+        var day = dt.getDate();
+	    var year = dt.getFullYear();
+	    var dt2=year+"/"+month+"/"+day;
+        //data-min-date="2017-02-04"
+        m=["00","01","02","03","04","05","06","07","08","09","10","11","12"];
+        day2=day+2;
+        if(day<10)
+            day="0"+day;
+        if(day2<10)
+            day2="0"+day2;
+        var dt3=year+"-"+m[month]+"-"+day;
+        var dt4=year+"-"+m[month]+"-"+day2;
+         $("#date").attr("data-preset",dt2);
+         $('#date').attr("data-min-date",dt3);
+         $('#date').attr("data-max-date",dt4);
+         $("#date2").attr("data-preset",dt2);
+         $("#date2").attr("data-min-date",dt3);
+         $("#date2").attr("data-max-date",dt4);
+    });
+	function btnclose(){
+		var x=document.getElementById("cell-content");
+		var y=document.getElementById("TripAdd");
+		x.removeChild(y);
+	}
+	function NextStep(){
+            var month = dt.getMonth()+1;
+            var day = dt.getDate();
+	        var year = dt.getFullYear();
+            var date5=new Date(month+"-"+day+"-"+year)
+            
+            var go=document.getElementById("gowhere").value;
+            go=go.split("");
+            go=go[0]+go[1]
+            date3=document.getElementById("date5").value;
+            date4=document.getElementById("date6").value;
+            
+            
+            Cookies.set('StartTime',date3)
+            Cookies.set('EndTime',date4)
+            //document.cookie="StartTime="+date3+";"
+            //document.cookie="EndTime="+date4+";"
+            date3=date3.split('/')
+            date4=date4.split('/')
+            //相差時間
+            date3=new Date(date3[1]+"-"+date3[2]+"-"+date3[0]);
+            date4=new Date(date4[1]+"-"+date4[2]+"-"+date4[0]);
+            var day1=parseInt(Math.abs(date4-date5)/1000/60/60/24)+1;
+            console.log(day1)
+            Cookies.set('day1',day1)
+            var dur=parseInt(Math.abs(date3-date4)/1000/60/60/24)+1;
+            console.log(dur)
+            Cookies.set('dur',dur)
+            console.log(go)
+            Cookies.set('go',go)
+            //document.cookie="go="+go+";"
+           // console.log(Cookies.get('go'))
+	        console.log("NextStep");
+	        btnclose();
+            drive()
+            
+
+    }
+     function drive(){
+         //document.cookie="go="+go+";"
+         //x.removeChild(document.getElementById("GoWhere"))
+        
+         var x=document.getElementById("cell-content");
+        
+         x.setAttribute('class','cell auto-size padding20')
+       
+         x.innerHTML="<div style=display:none id=godrive><h1 class='text-light margin20 fg-white' style='margin-top:50px;'>去程車種選擇</h1><div class='row flex-just-center' style=margin-top:200px; id=drive> <div class='tile bg-green fg-white' id=hightrain data-role=tile onclick=drive_onclick('hightrain')><div class='tile-content iconic' data-role=hint  data-hint-background=bg-green data-hint-color=fg-white data-hint-mode=2  data-hint=高鐵| data-hint-position=left data-hint-timeout=1000><span class='mif-train icon'></span></div></div><div id=train onclick=drive_onclick('train') class='tile bg-red fg-white' data-role='tile'><div class='tile-content iconic' data-role=hint data-hint-background=bg-red data-hint-color=fg-white data-hint-mode=2  data-hint=台鐵| data-hint-position=bottom data-hint-timeout=1000><span class='icon mif-subway'></span></div></div></div>";
+         $("#godrive").show(1200);       
+     }
+     function drive_onclick(id){
+         //做刪除與車次
+         console.log(id)
+         var x=document.getElementById("cell-content");
+         x.removeChild(document.getElementById("godrive"));
+         Cookies.set('transportation1',id)  
+         var go=Cookies.get('go')
+         console.log(go)
+         switch(id){
+            case "hightrain":
+                
+                    switch(go){
+                        case "台北":
+                            var html="<div class='select-form padding20 bg-white' id=hightrain> <h1>去程</h1><h5>請選擇起站:</h5><div class='input-control select full-size'><select id=hightrain1><option>請選擇起站</option><option value=台中>台中</option><option value=高雄>高雄</option></select></div>";
+                            html+="<h5>請選擇終站:</h5> <div class='input-control select full-size'><select id=hightrain2 onchange=transportation(1)><option>請選擇終站</option><option value=南港>南港</option><option value=台北>台北</option><option value=板橋>板橋</option></select></div></div>"
+                            break;
+                        case "台中":
+                            var html="<div class='select-form padding20 bg-white' id=hightrain> <h1>去程</h1><h5>請選擇起站:</h5><div class='input-control select full-size'><select id=hightrain1><option>請選擇起站</option><option value=南港>南港</option><option value=台北>台北</option><option value=板橋>板橋</option><option value=高雄>高雄</option></select></div>";
+                            html+="<h5>請選擇終站:</h5> <div class='input-control select full-size'><select id=hightrain2 onchange=transportation(1)><option>請選擇終站</option><option value=台中>台中</option></select></div></div>"
+                            break;
+                        case "高雄":
+                            var html="<div class='select-form padding20 bg-white' id=hightrain> <h1>去程</h1><h5>請選擇起站:</h5><div class='input-control select full-size'><select id=hightrain1><option>請選擇起站</option><option value=南港>南港</option><option value=台北>台北</option><option value=板橋>板橋</option><option value=台中>台中</option></select></div>";
+                             html+="<h5>請選擇終站:</h5> <div class='input-control select full-size'><select id=hightrain2 onchange=transportation(1)><option>請選擇終站</option><option value=高雄>高雄</option></select></div></div>"
+                            break;
+                    }
+                    x.innerHTML=html;
+                    break;
+            case "train":
+                    x.innerHTML=" </select></div></div>";
+                   
+                    switch(go){
+                        case "台北":
+                             var html="<div class='select-form padding20 bg-white' id=train><h1>去程</h1><h5>請選擇起站:</h5><div class='input-control select full-size'> <select id=train1><option>請選擇起站</option><option>大甲</option><option>豐原</option><option>沙鹿</option><option>台中</option><option>新左營</option><option>高雄</option></select></div>";
+                            html+="<h5>請選擇終站:</h5> <div class='input-control select full-size'><select id=train2 onchange=transportation(2)><option>請選擇終站</option><option>台北</option><option>板橋</option><option>松山</option>"
+                            break;
+                        case "台中":
+                             var html="<div class='select-form padding20 bg-white' id=train><h1>去程</h1><h5>請選擇起站:</h5><div class='input-control select full-size'> <select id=train1><option>請選擇起站</option><option>松山</option><option>台北</option><option>板橋</option><option>新左營</option><option>高雄</option></select></div>";
+                            html+="<h5>請選擇終站:</h5> <div class='input-control select full-size'><select id=train2 onchange=transportation(2)><option>請選擇終站</option><option>大甲</option><option>豐原</option><option>沙鹿</option><option>台中</option>"
+                            break;
+                        case "高雄":
+                             var html="<div class='select-form padding20 bg-white' id=train><h1>去程</h1><h5>請選擇起站:</h5><div class='input-control select full-size'> <select id=train1><option>請選擇起站</option><option>松山</option><option>台北</option><option>板橋</option><option>大甲</option><option>豐原</option><option>沙鹿</option><option>台中</option></select></div>";
+                             html+="<h5>請選擇終站:</h5> <div class='input-control select full-size'><select id=train2 onchange=transportation(2)><option>請選擇終站</option><option>高雄</option><option>新左營</option>"
+                            break;
+                    }
+                    x.innerHTML=html;
+                    break;
+         }
+     }
+     function transportation(i){
+         switch(i){
+             case 1:
+                var x=document.getElementById("hightrain1");
+                var y=document.getElementById("hightrain2");
+                if(x.value=="請選擇起站"||x.value==y.value)
+                    alert("請重新選擇") 
+                else{ 
+                    var st=y.value;
+                    x.innerHTML="<option>"+x.value+"</option>";
+                    y.innerHTML="<option>"+st+"</option>";
+                    week = new Array("7","1","2","3","4","5","6")
+                    dt=new Date(date3);
+                    var d=dt.getDay();
+                    $.ajax({
+                        url:"high_train.php",
+                        data:"&x="+x.value+"&y="+y.value+"&week="+week[d],
+                        dataType:"json",
+                        type:'post',
+                        success:function(data){
+                            var addHTML;
+                            var len=data.length;
+                            addHTML="<h5>請選擇出發時間與到達時間:</h5><div class='input-control select full-size'><select id=Time>";
+                            for(var i=0;i<len;i++){
+                              //  console.log(data[i][x.value]);
+                                addHTML+="<option>"+data[i][x.value]+"-"+data[i][y.value]+"</option>";
+                            }
+                            addHTML+=" </select></div><br><br><a class='button success large-button' onclick=check(1)>確定</a></div>";
+                            document.getElementById("hightrain").innerHTML+=addHTML;
+                        }
+                    });
+                }
+                break;
+             case 2:
+                var x=document.getElementById("train1");
+                var y=document.getElementById("train2");
+                 if(x.value=="請選擇起站"||x.value==y.value)
+                    alert("請重新選擇")
+                 else{
+                    x.innerHTML="<option>"+x.value+"</option>";
+                    y.innerHTML="<option>"+y.value+"</option>";
+                    week = new Array("7","1","2","3","4","5","6")
+                    dt=new Date(date3);
+                    var d=dt.getDay();
+                    $.ajax({
+                        url:"train.php",
+                        data:"&x="+x.value+"&y="+y.value+"&week="+week[d],
+                        dataType:"json",
+                        type:'post',
+                        success:function(data){
+                            var addHTML;
+                            var len=data.length;
+                            addHTML="<h5>請選擇出發時間與到達時間:</h5><div class='input-control select full-size'><select id=Time>";
+                            for(var i=0;i<len;i++){
+                               // console.log(data[i][x.value]);
+                                addHTML+="<option>"+data[i][x.value]+"-"+data[i][y.value]+"</option>";
+                            }
+                            addHTML+=" </select></div><br><br><a class='button success large-button' onclick=check(2)>確定</a></div>";
+                            document.getElementById("train").innerHTML+=addHTML;
+                        }   
+                    });
+                }
+                break;
+         } 
+     }
+     function check(i){
+        switch(i){
+            case 1:
+                var StartStation= document.getElementById("hightrain1").value
+                var StartStation2= document.getElementById("hightrain2").value
+                var Time= document.getElementById("Time").value
+                Cookies.set('StartStation',StartStation)
+                Cookies.set('StartStation2',StartStation2)
+                Cookies.set('Time',Time)
+                drive2()
+                //window.location.href="Map.html";
+                break;
+            case 2:
+                var StartStation= document.getElementById("train1").value
+                var StartStation2= document.getElementById("train2").value
+                var Time= document.getElementById("Time").value
+                 Cookies.set('StartStation',StartStation)
+                Cookies.set('StartStation2',StartStation2)
+                Cookies.set('Time',Time)
+                //window.location.href="Map.html";
+                drive2()
+                break;
+        }
+     }
+    function drive2(){
+         var x=document.getElementById("cell-content");
+        
+         x.setAttribute('class','cell auto-size padding20')
+       
+         x.innerHTML="<div style=display:none id=godrive><h1 class='text-light margin20 fg-white' style='margin-top:50px;'>回程車種選擇</h1><div class='row flex-just-center' style=margin-top:200px; id=drive> <div class='tile bg-green fg-white' id=hightrain data-role=tile onclick=drive_onclick2('hightrain')><div class='tile-content iconic' data-role=hint  data-hint-background=bg-green data-hint-color=fg-white data-hint-mode=2  data-hint=高鐵| data-hint-position=left data-hint-timeout=1000><span class='mif-train icon'></span></div></div><div id=train onclick=drive_onclick2('train') class='tile bg-red fg-white' data-role='tile'><div class='tile-content iconic' data-role=hint data-hint-background=bg-red data-hint-color=fg-white data-hint-mode=2  data-hint=台鐵| data-hint-position=bottom data-hint-timeout=1000><span class='icon mif-subway'></span></div></div></div>";
+         $("#godrive").show(1200);       
+    }
+    function drive_onclick2(id){
+         //做刪除與車次
+         console.log(id)
+         var x=document.getElementById("cell-content");
+         x.removeChild(document.getElementById("godrive"));  
+         //document.cookie="transportation2="+id+";"
+         Cookies.set('transportation2',id)
+         var go=Cookies.get('go')
+         console.log(go)
+         switch(id){
+            case "hightrain":
+                    var html="<div class='select-form padding20 bg-white' id=hightrain><h1>回程</h1><h5>請選擇起站:</h5><div class='input-control select full-size'><select id=hightrain1><option>請選擇起站</option>";
+                    switch(go){
+                       case "台北":
+                            html+="<option value=南港>南港</option><option value=台北>台北</option><option value=板橋>板橋</option></select></div>"
+                            break;
+                       case "台中":
+                            html+="<option value=台中>台中</option></select></div>"
+                            break;
+                       case "高雄":
+                            html+="<option value=高雄>高雄</option></select></div>"
+                            break;
+                    }
+                    html+="<h5>請選擇終站:</h5> <div class='input-control select full-size'><select id=hightrain2 onchange=transportation2(1)><option>請選擇終站</option><option value=南港>南港</option><option value=台北>台北</option><option value=板橋>板橋</option><option value=台中>台中</option><option value=高雄>高雄</option></select></div></div>";
+                    x.innerHTML=html
+                    break;
+            case "train":
+                    var html="<div class='select-form padding20 bg-white' id=train><h1>回程</h1><h5>請選擇起站:</h5><div class='input-control select full-size'> <select id=train1><option>請選擇起站</option>";
+                    switch(go){
+                       case "台北":
+                            html+="<option>松山</option><option>台北</option><option>板橋</option></select></div>"
+                            break;
+                       case "台中":
+                            html+="<option>大甲</option><option>豐原</option><option>沙鹿</option><option>台中</option></select></div>"
+                            break;
+                       case "高雄":
+                            html+="<option>新左營</option> <option>高雄</option></select></div>"
+                            break;
+                    }
+                    html+="<h5>請選擇終站:</h5> <div class='input-control select full-size'><select id=train2 onchange=transportation2(2)><option>請選擇終站</option><option>高雄</option><option>新左營</option><option>板橋</option><option>大甲</option><option>豐原</option><option>沙鹿</option><option>台中</option><option>台北</option><option>松山</option></select></div></div>";
+                    x.innerHTML=html;
+                    break;
+         }
+    }
+    function transportation2(i){
+         switch(i){
+             case 1:
+                var x=document.getElementById("hightrain1");
+                var y=document.getElementById("hightrain2");
+                if(x.value=="請選擇起站"||x.value==y.value)
+                    alert("請重新選擇") 
+                else{ 
+                    var st=y.value;
+                    x.innerHTML="<option>"+x.value+"</option>";
+                    y.innerHTML="<option>"+st+"</option>";
+                    week = new Array("7","1","2","3","4","5","6")
+                    dt=new Date(date3);
+                    var d=dt.getDay();
+                    $.ajax({
+                        url:"high_train.php",
+                        data:"&x="+x.value+"&y="+y.value+"&week="+week[d],
+                        dataType:"json",
+                        type:'post',
+                        success:function(data){
+                            var addHTML;
+                            var len=data.length;
+                            addHTML="<h5>請選擇出發時間與到達時間:</h5><div class='input-control select full-size'><select id=Time>";
+                            for(var i=0;i<len;i++){
+                              //  console.log(data[i][x.value]);
+                                addHTML+="<option>"+data[i][x.value]+"-"+data[i][y.value]+"</option>";
+                            }
+                            addHTML+=" </select></div><br><br><a class='button success large-button' onclick=check2(1)>確定</a></div>";
+                            document.getElementById("hightrain").innerHTML+=addHTML;
+                        }
+                    });
+                }
+                break;
+             case 2:
+                var x=document.getElementById("train1");
+                var y=document.getElementById("train2");
+                 if(x.value=="請選擇起站"||x.value==y.value)
+                    alert("請重新選擇")
+                 else{
+                    x.innerHTML="<option>"+x.value+"</option>";
+                    y.innerHTML="<option>"+y.value+"</option>";
+                    week = new Array("7","1","2","3","4","5","6")
+                    dt=new Date(date3);
+                    var d=dt.getDay();
+                    $.ajax({
+                        url:"train.php",
+                        data:"&x="+x.value+"&y="+y.value+"&week="+week[d],
+                        dataType:"json",
+                        type:'post',
+                        success:function(data){
+                            var addHTML;
+                            var len=data.length;
+                            addHTML="<h5>請選擇出發時間與到達時間:</h5><div class='input-control select full-size'><select id=Time>";
+                            for(var i=0;i<len;i++){
+                               // console.log(data[i][x.value]);
+                                addHTML+="<option>"+data[i][x.value]+"-"+data[i][y.value]+"</option>";
+                            }
+                            addHTML+=" </select></div><br><br><a class='button success large-button' onclick=check2(2)>確定</a></div>";
+                            document.getElementById("train").innerHTML+=addHTML;
+                        }   
+                    });
+                }
+                break;
+         } 
+     }
+    function check2(i){
+        console.log(i)
+        switch(i){
+            case 1:
+                var EndStation= document.getElementById("hightrain1").value
+                var EndStation2= document.getElementById("hightrain2").value
+                var Time= document.getElementById("Time").value
+                Cookies.set('EndStation',EndStation)
+                Cookies.set('EndStation2',EndStation2)
+                var dur=Cookies.get('dur')
+                if(parseInt(dur)==1){
+                    var stTime=Cookies.get('Time').split('-')[1]
+                    var time2=Time.split('-')[0]
+                    console.log(stTime)
+                    console.log(time2)
+                    stTime=stTime.split(':')
+                    time2=time2.split(':')
+                    stTime=parseInt(stTime[0]*60)+parseInt(stTime[1])
+                    time2=parseInt(time2[0]*60)+parseInt(time2[1])
+                    var total=time2-stTime
+                    console.log(total)
+                    if(total<0&&total<120){
+                        $.Notify({
+    						caption: '時間太少',
+    						content: '請重新選擇',
+							timeout:2000,
+    						type: 'alert'
+						});
+                    } 
+                    else{
+                         Cookies.set('Time2',Time)
+                          window.location.href="Map.html";
+                    }
+                }
+                else{
+                    Cookies.set('Time2',Time)
+                    window.location.href="Map.html";
+                }
+               
+                break;
+            case 2:
+                var EndStation= document.getElementById("train1").value
+                var EndStation2= document.getElementById("train2").value
+                var Time= document.getElementById("Time").value
+                  Cookies.set('EndStation',EndStation)
+                 Cookies.set('EndStation2',EndStation2)
+                  var dur=Cookies.get('dur')
+                 if(parseInt(dur)==1){
+                    var stTime=Cookies.get('Time').split('-')[1]
+                    var time2=Time.split('-')[0]
+                    console.log(stTime)
+                    console.log(time2)
+                    stTime=stTime.split(':')
+                    time2=time2.split(':')
+                    stTime=parseInt(stTime[0]*60)+parseInt(stTime[1])
+                    time2=parseInt(time2[0]*60)+parseInt(time2[1])
+                    var total=time2-stTime
+                    console.log(total)
+                    if(total<0&&total<120){
+                        $.Notify({
+    						caption: '時間太少',
+    						content: '請重新選擇',
+							timeout:2000,
+    						type: 'alert'
+						});
+                    } 
+                    else{
+                         Cookies.set('Time2',Time)
+                          window.location.href="Map.html";
+                    }
+                }
+                else{
+                    Cookies.set('Time2',Time)
+                    window.location.href="Map.html";
+                }
+                
+                break;
+        }
+     }
+    
+    
+	
+	</script>
+</head>
+
+<body>
+    <div class="app-bar fixed-top bg-black darcula" data-role="appbar">
+        <a class="app-bar-element " href="login.html">天氣亂入輕旅行</a>
+         <ul class="app-bar-menu">
+            <li data-flexorderorigin="0" data-flexorder="1"><a href="index.html">今日天氣</a></li>
+            <li data-flexorderorigin="2" data-flexorder="3">
+                <a href="" class="dropdown-toggle">旅遊規劃</a>
+                <ul class="d-menu" data-role="dropdown">
+                    <li><a href="trip.html">自動規劃</a></li>
+                    <li><a href="control_trip.html">手動規劃</a></li>
+                     <li><a href="Member_trip.html">參考旅遊</a></li>
+                </ul>
+            </li>
+            
+        </ul>
+        <div class="app-bar-element place-right active-container" id="member"> 
+            <span class="dropdown-toggle active-toggle "><span class="mif-cog"></span>試用者</span>
+           
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="flex-grid " style="height:100%;">
+            <div class="row" style="height:100%">
+                <div class="cell auto-size" id="cell-content" style="background-color:#2e80ab;">
+                    <div class=cell id=TripAdd>
+                        <div class=window>
+                            <div class="window-caption"><span class="window-caption-title" style=color:white>旅遊規劃</span><span class="btn-max" style="background-color:#282d32;color:
+                                    #ffffff;"></span><span onclick="btnclose()" class="btn-close" style="background-color:#282d32;"></span>
+                                <div class="window-content" background-color:#282d32;>
+                                    <form class="form1">
+                                        <span class="fg-white">想去哪裡:</span>
+                                        <div class="input-control select">
+                                            <select id="gowhere">
+                                                     <option>台北市</option>
+                                                     <option>台中市</option>
+                                                     <option>高雄市</option>
+                                            </select>
+                                        </div>
+                                        <br><br>
+                                        <span class="fg-white">開始日期:</span>
+                                        <div class="input-control text margin25" id="date" data-role="datepicker" data-locale="zhCN" data-format="yyyy/mm/dd">
+                                            <input type="text" id="date5">
+                                            <button class="button" type="button"><span class="mif-calendar"></span></button>
+                                        </div>
+                                        <br>
+                                        <br>
+                                        <br><span class="fg-white">結束日期:</span>
+                                        <div class="input-control text margin25" id="date2" data-role="datepicker" data-locale="zhCN" data-format="yyyy/mm/dd">
+                                            <input type="text" id="date6">
+                                            <button class="button" type="button"><span class="mif-calendar"></span></button>
+                                        </div>
+                                        <!--br>
+                                        <br>
+                                        <br><span class="fg-white">現在地點:</span><a class=button onclick=loc_map()><span class="mif-location"></span></a-->
+                                        <br>
+                                        <br>
+                                        <br><a id="btn_next" onclick="NextStep()" class="button primary btnright">下一步</a></form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

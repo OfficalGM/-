@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link href="css/metro-schemes.css" rel="stylesheet">
+    <link href="css/metro-responsive.css" rel="stylesheet">
+    <link href="css/metro.css" rel="stylesheet">
+    <link href="css/metro-icons.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="js/metro.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="liquidFillGauge.js" language="JavaScript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+    <script src="js.cookie.js"></script>
+    <script src="js/md5.min.js"></script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBW3eAYma10UoHCAyv63yvgQ7tmlquOCKs&callback=initMap"> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+    
+    <style>
+        #map {
+            position: absolute;
+            height: 100%;
+            width: 70%;
+            left: 30%;
+            top: 0%;
+        }
+        
+        #save {
+            position: absolute;
+            top: 90%;
+            left: 93%;
+        }
+        
+        html,
+        body {
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Jhenghei", sans-serif;
+        }
+        
+        .content {
+            float: left;
+            width: 15%;
+            left: 0%;
+            top: 0%;
+            height: 100%;
+            position: relative;
+            border: 0px;
+            border-right: 2px;
+            border-color: #fff;
+            border-style: solid;
+        }
+        
+        .content2 {
+            float: left;
+            width: 15%;
+            left: 15%;
+            height: 100%;
+            color: #fff;
+        }
+        
+        #box {
+            background-color: #fff;
+            margin-left: 5%;
+            margin-top: 5%;
+            width: 90%;
+            height: 8%;
+            border-radius: 10px;
+        }
+        
+        .tabcontrol .frames .frame {
+            background-color: #fff;
+        }
+        
+        .tabcontrol > .tabs li.active a {
+            background-color: #fff;
+            color: black;
+        }
+        
+        .tabcontrol > .tabs li {
+            display: block;
+            float: left;
+            position: relative;
+            white-space: nowrap;
+            background-color: #ccc;
+        }
+        
+        .box_content {
+            margin-left: 3%;
+            margin-top: 15%;
+            float: left;
+        }
+        
+        .tabcontrol > .frames .frame {
+            padding: 10px;
+        }
+        
+        .tabcontrol {
+            height: 100%;
+        }
+        
+        .tabcontrol > .frames {
+            height: 75%;
+        }
+        
+        .tagtitle {
+            width: 70%;
+            border-bottom: 1px solid #ccc;
+            margin: 0 auto;
+            margin-top: 3%;
+            text-align: center;
+            padding-bottom: 5px;
+            color: white;
+        }
+        
+        #trip,
+        #sleep {
+            margin-top: 7px;
+            margin-left: 10px;
+        }
+        
+        .listview-outlook .list .list-content {
+            font-size: 1.2rem
+        }
+        
+        .listfont {
+            font-size: 1.2rem
+        }
+        
+        @media screen and (max-width: 1200px) {
+            #map {
+                width: 70%;
+                left: 30%
+            }
+            .content {
+                width: 15%;
+            }
+            .content2 {
+                width: 15%;
+            }
+        }
+    </style>
+    <script>
+    var day=1,travel3=[],map,trip=[],trip2=[],trip3=[],trip4=[],trip5=[],Job;
+    var directionsService,directionsDisplay 
+    var Rand
+    $(document).ready(function() {
+        var x=document.getElementById("box");
+        var html="<h3 class=box_content><span class=mif-calendar></span>第1天 <a class='button success' onclick=add()>新增</a><a class='button alert' onclick=delet()>刪除</a></h3>";
+        x.innerHTML=html;
+        var y=document.getElementById("trip");
+        var z=document.getElementById("sleep")
+        var travel=[],travel2=[];
+        travel=Cookies.getJSON('travel')
+        travel2=Cookies.getJSON('travel2')
+        for(var i=0;i<travel.length;i++){
+             y.innerHTML+="<a class='button danger' style=margin-right:7px; onclick=add_trip('"+travel[i].travel+"') id="+travel[i].travel+">"+travel[i].travel+"</a>"
+             getLoc(travel[i].travel)
+        }
+        for(var i=0;i<travel2.length;i++){
+            z.innerHTML+="<a class='button danger' style=margin-right:7px;  onclick=add_trip('"+travel2[i].travel+"') id="+travel2[i].travel+">"+travel2[i].travel+"</a>"
+            getLoc(travel2[i].travel)
+        }
+        var member=Cookies.get('user')
+        if(member!="test"&&member!="使用者"&& typeof member !='undefined'){
+             Select_Job()    
+        }
+        else{
+             Get_MD5_Value()  
+        }
+      
+    });
+    function initMap() {
+           map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 8,
+                center: {lat: 23.9301287 , lng: 121.3559273}
+           });
+     }
+    function add(){
+         var x=document.getElementById("tabcontrol2");
+         var y=document.getElementById("tabcontrol3");
+         if(day<5){
+         day++
+         x.innerHTML+="<li class=' AA' id="+day+"><a onclick=select("+day+ ") href=#frame_1_"+day+" >"+day+"</a></li>"
+         y.innerHTML+="<div class='frame' style='display:none;'  id=frame_1_"+day+" ><div class=listview-outlook data-role=listview id=listview"+day+"></div></div>"
+
+         }
+         else{
+             $.Notify({
+					caption: '錯誤',
+					content: '達到上限',
+					timeout:2000,
+					type: 'alert'
+				});
+         }
+     }
+    function Select_Job(){
+         $.ajax({
+            type:'post',
+            dataType:"json",
+            url:'Job.php',
+            success:function(data){
+                Job=data[0].Job;
+            }
+        });
+     }
+    function select(id){
+        var z=document.getElementById("box");
+        var html="<h3 class=box_content><span class=mif-calendar></span>第"+id+"天 </h3>";
+        z.innerHTML=html;
+     }
+    function select2(){
+        var z=document.getElementById("box");
+        var html="<h3 class=box_content><span class=mif-calendar></span>第1天 <a class='button success' onclick=add()>新增</a><a class='button alert' onclick=delet()>刪除</a></h3>";
+        z.innerHTML=html;
+     }
+    function delet(){
+        var parent2=document.getElementById("tabcontrol2")
+        var x=document.getElementById(day)
+        var parent=document.getElementById("tabcontrol3")
+        var y=document.getElementById("frame_1_"+day)
+        parent2.removeChild(x)
+        parent.removeChild(y)
+        day--;
+     }
+    function add_trip(label){
+        var x=document.getElementById(label)  
+        var i=1;
+        for(;i<6;i++){
+            if($("#"+i).hasClass("active")==true)
+                break; 
+        }
+       var str=x.style.background.split(",")[1]
+       var hex= toHexString(str, str, str);
+        if(hex!="cccccc"){
+            
+            switch(i){
+                case 1:
+                    var y=document.getElementById("listview1");
+                    y.innerHTML+="<a class='list ' href=# id=1"+label+"><div class='list-content'> <span class='list-title listfont' >"+label+"</span><span class='button alert' style='left:70%;' onclick=delet2('1,"+label+"')>刪除<span></div></a>"
+                    trip.push(label)
+                    intiMap2(1)
+                    break;
+                case 2:
+                    var y=document.getElementById("listview2");
+                    y.innerHTML+="<a class='list ' href=# id=1"+label+"><div class='list-content'> <span class='list-title listfont' >"+label+"</span><span class='button alert' style='left:70%;' onclick=delet2('2,"+label+"')>刪除<span></div></a>"
+                     trip2.push(label)
+                      intiMap2(2)
+                    break;
+                case 3:
+                    var y=document.getElementById("listview3");
+                    y.innerHTML+="<a class='list ' href=# id=1"+label+"><div class='list-content'> <span class='list-title listfont' >"+label+"</span><span class='button alert' style='left:70%;' onclick=delet2('3,"+label+"')>刪除<span></div></a>"
+                     trip3.push(label)
+                      intiMap2(3)
+                    break;
+                case 4:
+                    var y=document.getElementById("listview4");
+                    y.innerHTML+="<a class='list ' href=# id=1"+label+"><div class='list-content'> <span class='list-title listfont' >"+label+"</span><span class='button alert' style='left:70%;' onclick=delet2('4,"+label+"')>刪除<span></div></a>"
+                     trip4.push(label)
+                      intiMap2(4)
+                    break;
+                case 5:
+                    var y=document.getElementById("listview5");
+                    y.innerHTML+="<a class='list ' href=# id=1"+label+"><div class='list-content'> <span class='list-title listfont' >"+label+"</span><span class='button alert' style='left:70%;' onclick=delet2('5,"+label+"')>刪除<span></div></a>"
+                     trip5.push(label)
+                      intiMap2(5)
+                    break;
+            }
+            
+        }
+        
+        document.getElementById(label).style.background="#ccc";
+        document.getElementById(label).style.border="#ccc";
+         /* <a class="list marked active" href="#">
+          <div class="list-content">
+               
+                <span class="button alert" style="left:70%;">刪除<span>                          
+           </div>
+           </a>*/
+    }
+    function toHexString(r,g,b) {
+        return ("00000" + (r << 16 | g << 8 | b).toString(16)).slice(-6);
+    }
+    function getLoc(label){
+         $.ajax({
+            type:'post',
+            dataType:"json",
+            url:'control_travel.php',
+            data:"&travel="+label,
+            success:function(data){
+                var len=data.length; 
+                var travel={
+                    name:label,
+                    lat:data[0].lat,
+                    lng:data[0].lng
+                }
+                travel3.push(travel)
+            }
+        });
+        
+    }
+    /*function getLoc2(label){
+         $.ajax({
+            type:'post',
+            dataType:"json",
+            url:'control_travel.php',
+            data:"&travel="+label,
+            success:function(data){
+                var len=data.length; 
+                var travel={
+                    name:label,
+                    lat:data[0].lat,
+                    lng:data[0].lng
+                }
+                travel4.push(travel)
+            }
+        });
+    }*/
+    function delet2(label){
+        label=label.split(",")
+        //console.log(label)
+        var i=parseInt(label[0])
+        label=label[1]
+        switch(i){
+            case 1:
+                var x=document.getElementById("listview1") 
+                var trip6=[];
+                initMap()
+                for(var i=0;i<trip.length;i++){  
+                   
+                    if(trip[i]!=label)
+                        trip6.push(trip[i])
+                }
+                
+                trip=[]
+                trip=trip6
+                console.log(trip)
+                trip6=[]
+                intiMap2(1)
+                break;
+            case 2:
+                var x=document.getElementById("listview2")
+                var trip6=[];
+                 initMap()
+                for(var i=0;i<trip2.length;i++){
+                    
+                    if(trip2[i]!=label)
+                    trip6.push(trip2[i])
+                }
+                trip2=[]
+                trip2=trip6
+                console.log(trip2)
+                trip6=[]
+                 intiMap2(2)
+                break;
+            case 3:
+                var x=document.getElementById("listview3")
+                var trip6=[];
+                initMap()
+                for(var i=0;i<trip3.length;i++){
+                    if(trip3[i]!=label)
+                    trip6.push(trip3[i])
+                }
+                trip3=[]
+                trip3=trip6
+                console.log(trip3)
+                trip6=[]
+                intiMap2(3)
+                break;
+            case 4:
+                var x=document.getElementById("listview4")
+                var trip6=[];
+                initMap()
+                for(var i=0;i<trip4.length;i++){
+                    if(trip4[i]!=label)
+                    trip6.push(trip4[i])
+                }
+                trip4=[]
+                trip4=trip6
+                console.log(trip4)
+                trip6=[]
+                 intiMap2(4)
+                break;
+            case 5:
+                var x=document.getElementById("listview5")
+                var trip6=[];
+                 initMap()
+                for(var i=0;i<trip5.length;i++){
+                    if(trip5[i]!=label)
+                    trip6.push(trip5[i])
+                }
+                trip5=[]
+                trip5=trip6
+                console.log(trip5)
+                trip6=[]
+                 intiMap2(5)
+                break;
+        }
+       
+        var y=document.getElementById("1"+label)
+        console.log(y)
+        console.log(x)
+        x.removeChild(y)
+        document.getElementById(label).style.background="#ce352c"
+        document.getElementById(label).style.border="#ce352c"
+
+    }
+    function intiMap2(i){
+        directionsService = new google.maps.DirectionsService;
+        directionsDisplay  = new google.maps.DirectionsRenderer;
+        directionsDisplay.setMap(map);
+        console.log("trip",trip)
+        var travel=[]
+        switch(i){
+            case 1:
+                for(var j=0;j<trip.length;j++){
+                   for(var k=0;k<travel3.length;k++){
+                       if(travel3[k].name==trip[j]){
+                           travel[j]={
+                               name:travel3[k].name,
+                               lat:travel3[k].lat,
+                               lng:travel3[k].lng
+                           }
+                       }
+                   }
+                }
+                break;
+            case 2:
+                for(var j=0;j<trip2.length;j++){
+                   for(var k=0;k<travel3.length;k++){
+                       if(travel3[k].name==trip2[j]){
+                           travel[j]={
+                               name:travel3[k].name,
+                               lat:travel3[k].lat,
+                               lng:travel3[k].lng
+                           }
+                       }
+                   }
+                }
+                break;
+            case 3:
+                for(var j=0;j<trip3.length;j++){
+                   for(var k=0;k<travel3.length;k++){
+                       if(travel3[k].name==trip3[j]){
+                           travel[j]={
+                               name:travel3[k].name,
+                               lat:travel3[k].lat,
+                               lng:travel3[k].lng
+                           }
+                       }
+                   }
+                }
+                break;
+            case 4:
+                for(var j=0;j<trip4.length;j++){
+                   for(var k=0;k<travel3.length;k++){
+                       if(travel3[k].name==trip4[j]){
+                           travel[j]={
+                               name:travel3[k].name,
+                               lat:travel3[k].lat,
+                               lng:travel3[k].lng
+                           }
+                       }
+                   }
+                }
+                break;
+            case 5:
+                for(var j=0;j<trip5.length;j++){
+                   for(var k=0;k<travel3.length;k++){
+                       if(travel3[k].name==trip5[j]){
+                           travel[j]={
+                               name:travel3[k].name,
+                               lat:travel3[k].lat,
+                               lng:travel3[k].lng
+                           }
+                       }
+                   }
+                }
+                break;
+        }
+        var waypts=[];
+        if(travel.length>1){
+             var start=travel[0].lat+","+travel[0].lng
+             var end=travel[travel.length-1].lat+","+travel[travel.length-1].lng
+             console.log(start,end)
+             for(var j=1;j<trip.length-1;j++){
+                 waypts.push({
+                        location: travel[j].lat+","+travel[j].lng,
+                        stopover: true
+                });
+            }
+            console.log("waypts",waypts)
+            console.log(start,end)
+            var request = {
+                    origin: start,
+                    destination: end,
+                    waypoints: waypts,
+                    optimizeWaypoints: true,
+                    travelMode: google.maps.DirectionsTravelMode.DRIVING
+            };
+            
+            directionsService.route(request, function(response, status) {
+                //規畫路徑回傳結果
+                if (status == google.maps.DirectionsStatus.OK) {
+                        directionsDisplay.setDirections(response);
+                }
+            });
+        }
+    }
+    function Get_MD5_Value(){
+        $.ajax({
+            type:'post',
+            dataType:"json",
+            url:'Search_Rand.php',
+            success:function(data){
+                  console.log(data[0].Rand)
+                  Job=data[0].Rand
+                  Rand=md5(data[0].Rand)      
+            }
+        });
+    }
+    function Save(){
+        var trip6=[],trip7=[],trip8=[],trip9=[],trip10=[];
+        var next=document.getElementsByClassName("AA");
+        console.log("next",next.length)
+        var x=document.getElementById("listview1")
+        var y=x.childNodes;
+        var member=Cookies.get('user')
+        if(member!="test"&&member!="使用者"&& typeof member !='undefined'&&y.length>1){
+            for(var i=1;i<=next.length;i++){
+            console.log(i)
+            switch(i){
+                case 1:
+                    var name2="";
+                    var x=document.getElementById("listview1")
+                    if(x.hasChildNodes()){
+                        var y=x.childNodes;
+                        console.log(y.length>1&&y.length<9)
+                        if(y.length>1&&y.length<9){
+                            for(var j=1;j<y.length;j++){
+                                var name=y[j].id.split("1")[1]
+                                var a={
+                                    Job:Job,
+                                    day:1,
+                                    name:name
+                                }
+                                trip6.push(a)
+                            }
+                            console.log("trip6",trip6)
+                            $.ajax({
+                                type:'post',
+                                dataType:"json",
+                                url:'Save_trip2.php',
+                                data:JSON.stringify(trip6),
+                                success:function(data){
+                                    
+                                }
+                            });
+                        }
+                        else{
+                             $.Notify({
+					            caption: '錯誤',
+					            content: '選擇數量超過',
+					            timeout:2000,
+					            type: 'alert'
+				            });
+                        }
+                    }
+                   
+                    break;
+                case 2:
+                    var name2="";
+                    var x=document.getElementById("listview2")
+                    if(x.hasChildNodes()){
+                        var y=x.childNodes;
+                        console.log(y)
+                        if(y.length>0&&y.length<9){
+                            for(var j=0;j<y.length;j++){
+                                var name=y[j].id.split("1")[1]
+                                var a={
+                                    Job:Job,
+                                    day:2,
+                                    name:name
+                                }
+                                trip7.push(a)
+                            }
+                            console.log(trip7)
+                            $.ajax({
+                                type:'post',
+                                dataType:"json",
+                                url:'Save_trip3.php',
+                                data:JSON.stringify(trip7),
+                                success:function(data){
+                                    console.log(data)
+                                }
+                            });
+                        }
+                        else{
+                             $.Notify({
+					            caption: '錯誤',
+					            content: '選擇數量超過',
+					            timeout:2000,
+					            type: 'alert'
+				            });
+                        }
+                    }
+                   
+                    break;
+                case 3:
+                    var name2="";
+                    var x=document.getElementById("listview3")
+                    if(x.hasChildNodes()){
+                        var y=x.childNodes;
+                        console.log(y)
+                        if(y.length>0&&y.length<9){
+                            for(var j=0;j<y.length;j++){
+                                var name=y[j].id.split("1")[1]
+                                var a={
+                                    Job:Job,
+                                    day:3,
+                                    name:name
+                                }
+                                trip8.push(a)
+                            }
+                            console.log(trip8)
+                            $.ajax({
+                                type:'post',
+                                dataType:"json",
+                                url:'Save_trip4.php',
+                                data:JSON.stringify(trip8),
+                                success:function(data){
+                                    console.log(data)
+                                }
+                            });
+                        }
+                        else{
+                             $.Notify({
+					            caption: '錯誤',
+					            content: '選擇數量超過',
+					            timeout:2000,
+					            type: 'alert'
+				            });
+                        }
+                    }
+                    console.log("CC")
+                    break;
+                case 4:
+                    var name2="";
+                    var x=document.getElementById("listview4")
+                    if(x.hasChildNodes()){
+                        var y=x.childNodes;
+                        console.log(y)
+                        if(y.length>0&&y.length<9){
+                            for(var j=0;j<y.length;j++){
+                                 var name=y[j].id.split("1")[1]
+                                var a={
+                                    Job:Job,
+                                    day:4,
+                                    name:name
+                                }
+                                trip9.push(a)
+                            }
+                            console.log(trip9)
+                            $.ajax({
+                                type:'post',
+                                dataType:"json",
+                                url:'Save_trip5.php',
+                                data:JSON.stringify(trip9),
+                                success:function(data){
+                                    console.log(data)
+                                }
+                            });
+                        }
+                        else{
+                             $.Notify({
+					            caption: '錯誤',
+					            content: '選擇數量超過',
+					            timeout:2000,
+					            type: 'alert'
+				            });
+                        }
+                    }
+                    
+                    break;
+                case 5:
+                    var name2="";
+                    var x=document.getElementById("listview5")
+                    if(x.hasChildNodes()){
+                        var y=x.childNodes;
+                        console.log(y)
+                        if(y.length>0&&y.length<9){
+                            for(var j=0;j<y.length;j++){
+                                var name=y[j].id.split("1")[1]
+                                var a={
+                                    Job:Job,
+                                    day:5,
+                                    name:name
+                                }
+                                trip10.push(a)
+                            }
+                            console.log("trip10",trip10)
+                            $.ajax({
+                                type:'post',
+                                dataType:"json",
+                                url:'Save_trip6.php',
+                                data:JSON.stringify(trip10),
+                                success:function(data){
+                                    console.log(data)
+                                }
+                            });
+                        }
+                        else{
+                             $.Notify({
+					            caption: '錯誤',
+					            content: '選擇數量超過',
+					            timeout:2000,
+					            type: 'alert'
+				            });
+                        }
+                    }
+                    
+                    break;
+            }  
+        }
+         Cookies.set('Job',Job)
+         Cookies.set("qrcode",next.length)
+         window.location.href="qrcode.html";   
+        }
+        else{
+            //試用者Guest
+            for(var i=1;i<=next.length;i++){
+            console.log(i)
+            switch(i){
+                case 1:
+                    var name2="";
+                    var x=document.getElementById("listview1")
+                    if(x.hasChildNodes()){
+                        var y=x.childNodes;
+                        console.log(y.length>1&&y.length<9)
+                        if(y.length>1&&y.length<9){
+                            for(var j=1;j<y.length;j++){
+                                var name=y[j].id.split("1")[1]
+                                var a={
+                                    Job:Job,
+                                    Rand:Rand,
+                                    day:1,
+                                    name:name
+                                }
+                                trip6.push(a)
+                            }
+                            console.log("trip6",trip6)
+                            $.ajax({
+                                type:'post',
+                                dataType:"json",
+                                url:'Save_Guest.php',
+                                data:JSON.stringify(trip6),
+                                success:function(data){
+                                   console.log(data)
+                                }
+                            });
+                        }
+                        else{
+                             $.Notify({
+					            caption: '錯誤',
+					            content: '選擇數量超過',
+					            timeout:2000,
+					            type: 'alert'
+				            });
+                        }
+                    }
+                   
+                    break;
+                case 2:
+                    var name2="";
+                    var x=document.getElementById("listview2")
+                    if(x.hasChildNodes()){
+                        var y=x.childNodes;
+                        console.log(y)
+                        if(y.length>0&&y.length<9){
+                            for(var j=0;j<y.length;j++){
+                                var name=y[j].id.split("1")[1]
+                                 var a={
+                                    Job:Job,
+                                    Rand:Rand,
+                                    day:2,
+                                    name:name
+                                }
+                                trip7.push(a)
+                            }
+                            console.log("trip7",trip7)
+                            $.ajax({
+                                type:'post',
+                                dataType:"json",
+                                url:'Save_Guest2.php',
+                                data:JSON.stringify(trip7),
+                                success:function(data){
+                                    console.log(data)
+                                }
+                            });
+                        }
+                        else{
+                             $.Notify({
+					            caption: '錯誤',
+					            content: '選擇數量超過',
+					            timeout:2000,
+					            type: 'alert'
+				            });
+                        }
+                    }
+                   
+                    break;
+                case 3:
+                    var name2="";
+                    var x=document.getElementById("listview3")
+                    if(x.hasChildNodes()){
+                        var y=x.childNodes;
+                        console.log(y)
+                        if(y.length>0&&y.length<9){
+                            for(var j=0;j<y.length;j++){
+                                var name=y[j].id.split("1")[1]
+                                console.log(name)
+                                 var a={
+                                    Job:Job,
+                                    Rand:Rand,
+                                    day:3,
+                                    name:name
+                                }
+                                trip8.push(a)
+                            }
+                            console.log(trip8)
+                            $.ajax({
+                                type:'post',
+                                dataType:"json",
+                                url:'Save_Guest3.php',
+                                data:JSON.stringify(trip8),
+                                success:function(data){
+                                    console.log(data)
+                                }
+                            });
+                        }
+                        else{
+                             $.Notify({
+					            caption: '錯誤',
+					            content: '選擇數量超過',
+					            timeout:2000,
+					            type: 'alert'
+				            });
+                        }
+                    }
+                    console.log("CC")
+                    break;
+                case 4:
+                    var name2="";
+                    var x=document.getElementById("listview4")
+                    if(x.hasChildNodes()){
+                        var y=x.childNodes;
+                        console.log(y)
+                        if(y.length>0&&y.length<9){
+                            for(var j=0;j<y.length;j++){
+                                var name=y[j].id.split("1")[1]
+                                console.log(name)
+                                 var a={
+                                    Job:Job,
+                                    Rand:Rand,
+                                    day:4,
+                                    name:name
+                                }
+                                trip9.push(a)
+                            }
+                            console.log(trip9)
+                            $.ajax({
+                                type:'post',
+                                dataType:"json",
+                                url:'Save_Guest4.php',
+                                data:JSON.stringify(trip9),
+                                success:function(data){
+                                    console.log(data)
+                                }
+                            });
+                        }
+                        else{
+                             $.Notify({
+					            caption: '錯誤',
+					            content: '選擇數量超過',
+					            timeout:2000,
+					            type: 'alert'
+				            });
+                        }
+                    }
+                    
+                    break;
+                case 5:
+                    var name2="";
+                    var x=document.getElementById("listview5")
+                    if(x.hasChildNodes()){
+                        var y=x.childNodes;
+                        console.log(y)
+                        if(y.length>0&&y.length<9){
+                             for(var j=0;j<y.length;j++){
+                                var name=y[j].id.split("1")[1]
+                                console.log(name)
+                                 var a={
+                                    Job:Job,
+                                    Rand:Rand,
+                                    day:5,
+                                    name:name
+                                }
+                                trip10.push(a)
+                            }
+                            console.log("trip10",trip10)
+                            $.ajax({
+                                type:'post',
+                                dataType:"json",
+                                url:'Save_Guest5.php',
+                                data:JSON.stringify(trip10),
+                                success:function(data){
+                                    console.log(data)
+                                }
+                            });
+                        }
+                        else{
+                             $.Notify({
+					            caption: '錯誤',
+					            content: '選擇數量超過',
+					            timeout:2000,
+					            type: 'alert'
+				            });
+                        }
+                       break; 
+            }       
+            } 
+            Cookies.set('MD',Rand)
+            Cookies.set("qrcode",next.length)
+            window.location.href="qrcode2.html";   
+        }
+          
+            
+        }
+    }
+        
+    
+    
+    </script>
+</head>
+
+<body>
+    <div style="background-color: #333; width:100%;height:100%">
+        <div class="content">
+            <div id="box">
+            </div>
+            <div class="tabcontrol" data-role="tabcontrol" style="top:3%;" id="tabcontrol">
+                <ul class="tabs" id="tabcontrol2">
+                    <li class="active AA" id="1"><a href="#frame_1_1" onclick="select2()">1</a></li>
+                </ul>
+                <div class="frames" style="background-color:#fff;" id=tabcontrol3>
+                    <div class="frame" id="frame_1_1" style="display: block;">
+                        <div class="listview-outlook" data-role="listview" id="listview1">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content2">
+            <div>
+                <div class="tagtitle">景點</div>
+                <div id="trip"></div>
+            </div>
+            <div>
+                <div class="tagtitle">住宿</div>
+                <div id="sleep"></div>
+            </div>
+        </div>
+        <div id="map"></div>
+
+    </div>
+    <div class="tile-small bg-orange fg-white" data-role="tile" id="save" onclick="Save()">
+        <div class="tile-content iconic">
+            <span class="icon mif-files-empty" style="margin-top:-23px;"></span>
+            <p style="margin-top:50px; margin-left:22.5px">存檔
+                <p>
+
+        </div>
+    </div>
+   
+</body>
+
+</html>

@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+    <title>天氣亂入輕旅行</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<link href="css/metro-responsive.css" rel="stylesheet">
+	<link href="css/metro.css" rel="stylesheet">
+	<link href="css/metro-icons.css" rel="stylesheet">
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="js/metro.js"></script>
+	<script src="js.cookie.js"></script>
+	<style type="text/css">
+		:root .adsbygoogle {
+			display: none !important;
+			
+		}
+		html,
+        body {
+            background-color: #2e80ab;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Jhenghei", sans-serif;
+        }
+		.login-form {
+			width: 25rem;
+			height: 18.75rem;
+			position: fixed;
+			top: 50%;
+			margin-top: -9.375rem;
+			left: 50%;
+			margin-left: -12.5rem;
+			background-color: #ffffff;
+			opacity: 0;
+			-webkit-transform: scale(.8);
+			transform: scale(.8);
+		}
+		/*.login-form{
+			display: block;
+			float:right;
+			width: 500px;
+			height: 100%;
+			position: fixed;
+			left: 70%;
+			background-color: #ffffff;
+			opacity: 0;
+			overflow-y: auto;
+    		overflow-x: hidden;
+			//
+    		z-index: 1;
+		}*/
+		.h{
+			margin-top:70px;
+			margin-left:7%;
+		}
+	</style>
+	<script>
+	function Asuccess(){
+		var id= document.getElementById('user_login').value;
+		var pas=document.getElementById('user_password').value;
+		var st="&id="+id+"&pas="+pas;
+		//console.log(st);
+		if(id==""||pas==""){
+			$.Notify({
+				caption: '失敗',
+				content: '登入失敗',
+				timeout:1500,
+				type: 'alert'
+			});
+		}
+		else{
+			 $.ajax({
+					url:"login.php",
+					type: 'POST',
+					dataType:"json",
+					data:"&id="+id+"&pas="+pas,
+					success:function(data){
+						if(data.success==0)
+							$.Notify({
+								caption: '失敗',
+								content: '登入失敗',
+								timeout:1500,
+								type: 'alert'
+							});
+						else{
+							Cookies.set('user',id);
+							console.log(id)
+							window.location.href="index.html";
+						}
+					}
+			 });
+			
+		}
+	}
+	function test(){
+		Cookies.set('user',"test");
+		window.location.href="index.html";
+	}
+	function Reg(){
+		var html="<h1 class='text-light'>註冊</h1><hr class='thin'><br><div class='input-control text full-size' data-role='input'><label for='user_login'>使用者email:</label><input type=text name=user_login id='user_reg' style='padding-right: 42px;'><button class='button helper-button clear' tabindex=-1 type='button'><span class='mif-cross'></span></button></div><br><br><div class='input-control password full-size' data-role='input'><label for='user_password'>使用者密碼:</label><input type=password name=user_password id=user_password style=padding-right: 42px;><button class='button helper-button reveal' tabindex=-1 type=button><span class=mif-looks></span></button></div><br><br><div class=form-actions><button type='button' onclick=check() class='button primary'>確定</button>"
+		var f=document.getElementById("ff")
+		f.innerHTML=html
+		
+	}
+	function check(){
+		var email=document.getElementById("user_reg").value
+		var pas=document.getElementById("user_password").value
+		var emailRule = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/;
+		if(email.search(emailRule)!=-1&&pas!=""){
+			
+			$.ajax({
+                url:"Reg.php",
+                dataType:"json",
+                type:'post',
+				data:"&Name="+email+"&pas="+pas,
+				success:function(data){
+					console.log(data)
+					if(data.success==0){
+						$.Notify({
+							caption: '失敗',
+							content: '重複Email',
+							timeout:3000,
+							type: 'alert'
+						});
+					}
+					else{
+						$.Notify({
+    						caption: '註冊成功',
+    						content: '3秒後跳轉頁面',
+							timeout:3000,
+    						type: 'success'
+						});
+						var t=setTimeout("window.location.href='Login.html'",3000)
+					}
+				}
+			});
+		}
+		else{
+			$.Notify({
+						caption: '失敗',
+						content: '註冊失敗，Email格式錯誤',
+						timeout:2000,
+						type: 'alert'
+					});
+		}
+	}
+	</script>
+</head>
+
+<body>
+	<h1 class='fg-white h'></h1>
+	<div class="login-form padding20 block-shadow" style="opacity: 1; transform: scale(1); transition: 0.5s;">
+		<form id="ff">
+			<h1 class="text-light">天氣亂入輕旅行-登入</h1>
+			<hr class="thin">
+			<br>
+			<div class="input-control text full-size" data-role="input">
+				<label for="user_login">使用者email:</label>
+				<input type="text" name="user_login" id="user_login" style="padding-right: 42px;">
+				<button class="button helper-button clear" tabindex="-1" type="button"><span class="mif-cross"></span></button>
+			</div>
+			<br>
+			<br>
+			<div class="input-control password full-size" data-role="input">
+				<label for="user_password">使用者密碼:</label>
+				<input type="password" name="user_password" id="user_password" style="padding-right: 42px;">
+				<button class="button helper-button reveal" tabindex="-1" type="button"><span class="mif-looks"></span></button>
+			</div>
+			<br>
+			<br>
+			<div class="form-actions">
+				<button type="button" onclick="Asuccess()" class="button primary">登入</button>
+				<button type="button" onclick="test()" class="button primary">試用</button>
+				<button type="button" onclick="Reg()" class="button primary">註冊</button>
+			</div>
+		</form>
+	</div>
+
+</body>
+
+</html>

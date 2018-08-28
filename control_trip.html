@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link href="css/metro-schemes.css" rel="stylesheet">
+    <link href="css/metro-responsive.css" rel="stylesheet">
+    <link href="css/metro.css" rel="stylesheet">
+    <link href="css/metro-icons.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="js/metro.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="liquidFillGauge.js" language="JavaScript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+    <script src="js.cookie.js"></script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBW3eAYma10UoHCAyv63yvgQ7tmlquOCKs&callback=initMap"> </script>
+    <style>
+        #map {
+            position: absolute;
+            height: 100%;
+            width: 85%;
+            left: 15%;
+            top: -0%;
+        }
+        
+        html,
+        body {
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Jhenghei", sans-serif;
+        }
+        
+        .list {
+            width: 15%;
+            height: auto;
+            top: 0%;
+        }
+        
+        .app-bar {
+            width: 24%;
+            position: absolute;
+            color: #cccccc;
+            top: 2%;
+            left: 45%;
+        }
+        
+        #next_step {
+            position: absolute;
+            top: 90%;
+            left: 93%;
+        }
+        
+        .title {
+            padding: 0px 0px 10px 0px;
+            color: #0d96a0;
+            font-family: "微軟正黑體", Arial;
+            font-size: 160%;
+            display: inline-block;
+            width: 99%;
+            line-height: 1.6em;
+        }
+        
+        .Info2 {
+            padding-top: 6px;
+            clear: both;
+            text-align: left;
+            width: 400px;
+            height: 35px;
+            font-family: "微軟正黑體", Arial;
+        }
+        
+        .add {
+            display: inline-block;
+            width: 99%;
+            line-height: 1.6em;
+        }
+        
+        .Info2 a {
+            margin: 8px 4px 0px 8px;
+            background: #46c2cc;
+            background: linear-gradient(to bottom, #46c2cc 0%, #3bb7c1 95%, #309eab 100%);
+            filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#46c2cc', endColorstr='#309eab', GradientType=0);
+            padding: 4px 14px 4px 14px;
+            text-decoration: none;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        
+        .Info2 a:hover {
+            background: #202428;
+        }
+        
+        .drisc {
+            display: inline-block;
+            width: 99%;
+            line-height: 1.4em;
+            font-size: 8px;
+        }
+        
+        .listview-outlook .list .list-content {
+            font-size: 1.5rem;
+        }
+        
+        .listview-outlook .list .list-content .list-remark {
+            font-size: 1rem;
+        }
+        
+        .button2 {
+            top: 0%;
+            left: 80%;
+        }
+    </style>
+    <script>
+    $(document).ready(function() {
+    });
+    
+    function Logout(){
+        Cookies.remove('user');
+        window.location.href="login.html"
+    }
+     function initMap() {
+           map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 8,
+                center: {lat: 23.9301287 , lng: 121.3559273}
+           });
+     }
+     var tai1=[],tai2=[],tai3=[],tai4=[],tai5=[],tai6=[],tai7=[],tai8=[],tai9=[],tai10=[];
+     var tai11,tai12,tai13,tai14,tai15,tai16,tai17,tai18,tai19,tai20;
+     var new_tai=[],new_tai2=[];
+     var new_tai11,new_tai12;
+     var tai=[],tai2=[];
+     var tai11,tai12;
+     var kao1=[],kao2=[],kao3=[],kao4=[],kao5=[],kao6=[],kao7=[],kao8=[],kao9=[],kao10=[],kao11=[],kao12=[],kao13=[],kao14=[],kao15=[]
+     var kao21,kao22,kao23,kao24,kao25,kao26,kao27,kao28,kao29,kao30,kao31,kao32,kao33,kao34,kao35
+     var marker=[];
+     var motel=[],hotel=[]
+     var hotel2,motel2;
+     var trip=new Array(),trip2=[];
+     function check(id){
+         var x=document.getElementById(id)
+         console.log(x.id)
+         switch(x.id){
+            case "公共藝術":
+                if(x.checked==true){
+                    Taipei(1)
+                }
+                else{
+                    while(tai1.length){
+                        tai1.pop().setMap(null);
+                    }
+                    tai11.clearMarkers();
+                }
+                break;
+            case "戶外踏青":
+               if(x.checked==true){
+                    Taipei(2)
+                }
+                else{
+                    while(tai2.length){
+                        tai2.pop().setMap(null);
+                    }
+                    tai12.clearMarkers();
+                }
+                break;
+            case "宗教信仰":
+                if(x.checked==true){
+                    Taipei(3)
+                }
+                else{
+                    while(tai3.length){
+                        tai3.pop().setMap(null);
+                    }
+                    tai13.clearMarkers();
+                }
+                break;
+            case "春季活動":
+                if(x.checked==true){
+                    Taipei(4)
+                }
+                else{
+                    while(tai4.length){
+                        tai4.pop().setMap(null);
+                    }
+                    tai14.clearMarkers();
+                }
+                break;
+            case "單車遊蹤":
+                if(x.checked==true){
+                    Taipei(5)
+                }
+                else{
+                    while(tai5.length){
+                        tai5.pop().setMap(null);
+                    }
+                    tai15.clearMarkers();
+                }
+                break;
+            case "養生溫泉":
+                if(x.checked==true){
+                    Taipei(6)
+                }
+                else{
+                    while(tai6.length){
+                        tai6.pop().setMap(null);
+                    }
+                    tai16.clearMarkers();
+                }
+                break;
+            case "歷史建築":
+                if(x.checked==true){
+                    Taipei(7)
+                }
+                else{
+                    while(tai7.length){
+                        tai7.pop().setMap(null);
+                    }
+                    tai17.clearMarkers();
+                }
+                break;
+            case "親子共遊":
+                if(x.checked==true){
+                    Taipei(8)
+                }
+                else{
+                    while(tai8.length){
+                        tai8.pop().setMap(null);
+                    }
+                    tai18.clearMarkers();
+                }
+                break;
+            case "藍色公路":
+                if(x.checked==true){
+                    Taipei(9)
+                }
+                else{
+                    while(tai9.length){
+                        tai9.pop().setMap(null);
+                    }
+                    tai19.clearMarkers();
+                }
+                break;
+            case "藝文館所":
+                if(x.checked==true){
+                    Taipei(10)
+                }
+                else{
+                    while(tai10.length){
+                        tai10.pop().setMap(null);
+                    }
+                    tai20.clearMarkers();
+                }
+                break;
+            case "New1":
+                if(x.checked==true){
+                     New_Taipei(1)
+                }
+                else{
+                    while(new_tai.length){
+                        new_tai.pop().setMap(null);
+                    }
+                    new_tai11.clearMarkers();
+                }
+                break;
+            case "New2":
+                if(x.checked==true){
+                     New_Taipei(2)
+                }
+                else{
+                    while(new_tai2.length){
+                        new_tai2.pop().setMap(null);
+                    }
+                    new_tai12.clearMarkers();
+                }
+                break;
+            case "Taichung":
+                if(x.checked==true){
+                     Taichung(1)
+                }
+                else{
+                    while(tai.length){
+                        tai.pop().setMap(null);
+                    }
+                    tai11.clearMarkers();
+                }
+                break;
+            case "Taichung2":
+                if(x.checked==true){
+                     Taichung(2)
+                }
+                else{
+                    while(tai2.length){
+                        tai2.pop().setMap(null);
+                    }
+                    tai12.clearMarkers();
+                }
+                break;
+            case "文化":
+                if(x.checked==true){
+                     kao(1)
+                }
+                else{
+                    while(kao1.length){
+                        kao1.pop().setMap(null);
+                    }
+                    kao21.clearMarkers();
+                }
+                break;
+            case "生態":
+                if(x.checked==true){
+                     kao(2)
+                }
+                else{
+                    while(kao2.length){
+                        kao2.pop().setMap(null);
+                    }
+                    kao22.clearMarkers();
+                }
+                break;
+            case "古蹟":
+                if(x.checked==true){
+                     kao(3)
+                }
+                else{
+                    while(kao3.length){
+                        kao3.pop().setMap(null);
+                    }
+                    kao23.clearMarkers();
+                }
+                break;
+            case "廟宇":
+                if(x.checked==true){
+                     kao(4)
+                }
+                else{
+                    while(kao4.length){
+                        kao4.pop().setMap(null);
+                    }
+                    kao24.clearMarkers();
+                }
+                break;
+            case "藝術":
+                if(x.checked==true){
+                     kao(5)
+                }
+                else{
+                    while(kao5.length){
+                        kao5.pop().setMap(null);
+                    }
+                    kao25.clearMarkers();
+                }
+                break;
+            case "小吃":
+                if(x.checked==true){
+                     kao(6)
+                }
+                else{
+                    while(kao6.length){
+                        kao6.pop().setMap(null);
+                    }
+                    kao26.clearMarkers();
+                }
+                break;
+            case "國家風景區":
+                if(x.checked==true){
+                     kao(7)
+                }
+                else{
+                    while(kao7.length){
+                        kao7.pop().setMap(null);
+                    }
+                    kao27.clearMarkers();
+                }
+                break;
+            case "休閒農場":
+                if(x.checked==true){
+                     kao(8)
+                }
+                else{
+                    while(kao8.length){
+                        kao8.pop().setMap(null);
+                    }
+                    kao28.clearMarkers();
+                }
+                break;
+            case "溫泉":
+                if(x.checked==true){
+                     kao(9)
+                }
+                else{
+                    while(kao9.length){
+                        kao9.pop().setMap(null);
+                    }
+                    kao29.clearMarkers();
+                }
+                break;
+            case "自然風景":
+                if(x.checked==true){
+                     kao(10)
+                }
+                else{
+                    while(kao10.length){
+                        kao10.pop().setMap(null);
+                    }
+                    kao30.clearMarkers();
+                }
+                break;
+            case "遊憩":
+                if(x.checked==true){
+                     kao(11)
+                }
+                else{
+                    while(kao11.length){
+                        kao11.pop().setMap(null);
+                    }
+                    kao31.clearMarkers();
+                }
+                break;
+            case "體育健身":
+                if(x.checked==true){
+                     kao(12)
+                }
+                else{
+                    while(kao12.length){
+                        kao12.pop().setMap(null);
+                    }
+                    kao32.clearMarkers();
+                }
+                break;
+            case "觀光工廠":
+                if(x.checked==true){
+                     kao(13)
+                }
+                else{
+                    while(kao13.length){
+                        kao13.pop().setMap(null);
+                    }
+                    kao33.clearMarkers();
+                }
+                break;
+            case "都會公園":
+                 if(x.checked==true){
+                     kao(14)
+                }
+                else{
+                    while(kao14.length){
+                        kao14.pop().setMap(null);
+                    }
+                    kao34.clearMarkers();
+                }
+                break;
+            case "其他":
+                 if(x.checked==true){
+                     kao(15)
+                }
+                else{
+                    while(kao15.length){
+                        kao15.pop().setMap(null);
+                    }
+                    kao35.clearMarkers();
+                }
+                break;
+            case "民宿":
+                  if(x.checked==true){
+                     gethotel(2)
+                }
+                else{
+                    while(motel.length){
+                        motel.pop().setMap(null);
+                    }
+                    motel2.clearMarkers();
+                }
+                break;
+            case "旅館":
+                  if(x.checked==true){
+                     gethotel(1)
+                }
+                else{
+                    while(hotel.length){
+                        hotel.pop().setMap(null);
+                    }
+                    hotel2.clearMarkers();
+                }
+                break;
+         
+         
+         }
+     }
+     
+     function Taipei(id){
+         switch(id){
+            case 1:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"台北1",
+                        success:function(data){
+                            var len=data.length;
+                            console.log(len)
+                            var image={
+                                url:'pin.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                     content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                 attachSecretMessage(marker[i],content,map) ;
+                                tai1.push(marker[i]); 
+                        }
+                        var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                        tai11 = new MarkerClusterer(map, tai1,mcOptions);
+                        }
+                    });
+                break;
+            case 2:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"台北2",
+                        success:function(data){
+                            var len=data.length;
+                            console.log(len)
+                            var image={
+                                url:'pin_3.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                     content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                 attachSecretMessage(marker[i],content,map) ;
+                        
+                                tai2.push(marker[i]); 
+                        }
+                        var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                        tai12 = new MarkerClusterer(map, tai2,mcOptions);
+                        }
+                    });
+                break;
+            case 3:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"台北3",
+                        success:function(data){
+                            var len=data.length;
+                            console.log(len)
+                            var image={
+                                url:'pin_4.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                     content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                 attachSecretMessage(marker[i],content,map) ;
+                               
+                                tai3.push(marker[i]); 
+                        }
+                        var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                        tai13 = new MarkerClusterer(map, tai3,mcOptions);
+                        }
+                    });
+                break;
+            case 4:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"台北4",
+                        success:function(data){
+                            var len=data.length;
+                            console.log(len)
+                            var image={
+                                url:'pin_5.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                     content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                 attachSecretMessage(marker[i],content,map) ;
+                               
+                                tai4.push(marker[i]); 
+                        }
+                        var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                        tai14 = new MarkerClusterer(map, tai4,mcOptions);
+                        }
+                    });
+                break;
+            case 5:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"台北5",
+                        success:function(data){
+                            var len=data.length;
+                            console.log(len)
+                            var image={
+                                url:'pin_6.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                     content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                 attachSecretMessage(marker[i],content,map) ;
+                               
+                                tai5.push(marker[i]); 
+                        }
+                        var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                        tai15 = new MarkerClusterer(map, tai5,mcOptions);
+                        }
+                    });
+                break;
+            case 6:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"台北6",
+                        success:function(data){
+                            var len=data.length;
+                            console.log(len)
+                            var image={
+                                url:'pin_7.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                     content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                 attachSecretMessage(marker[i],content,map) ;
+                               
+                                tai6.push(marker[i]); 
+                        }
+                        var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                        tai16 = new MarkerClusterer(map, tai6,mcOptions);
+                        }
+                    });
+                break;
+            case 7:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"台北7",
+                        success:function(data){
+                            var len=data.length;
+                            console.log(len)
+                            var image={
+                                url:'pin_8.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                     content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                 attachSecretMessage(marker[i],content,map) ;
+                               
+                                tai7.push(marker[i]); 
+                        }
+                        var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                        tai17 = new MarkerClusterer(map, tai7,mcOptions);
+                        }
+                    });
+                break;
+            case 8:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"台北8",
+                        success:function(data){
+                            var len=data.length;
+                            console.log(len)
+                            var image={
+                                url:'pin_9.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                     content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                 attachSecretMessage(marker[i],content,map) ;
+                               
+                                tai8.push(marker[i]); 
+                        }
+                        var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                        tai18 = new MarkerClusterer(map, tai8,mcOptions);
+                        }
+                    });
+                break;
+            case 9:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"台北9",
+                        success:function(data){
+                            var len=data.length;
+                            console.log(len)
+                            var image={
+                                url:'pin_10.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                     content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                 attachSecretMessage(marker[i],content,map) ;
+                               
+                                tai9.push(marker[i]); 
+                        }
+                        var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                        tai19 = new MarkerClusterer(map, tai9,mcOptions);
+                        }
+                    });
+                break;
+            case 10:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"台北10",
+                        success:function(data){
+                            var len=data.length;
+                            console.log(len)
+                            var image={
+                                url:'pin_11.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                     content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                 attachSecretMessage(marker[i],content,map) ;
+                                
+                                tai10.push(marker[i]); 
+                        }
+                        var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                        tai20 = new MarkerClusterer(map, tai10,mcOptions);
+                        }
+                    });
+                break;
+         }
+     }
+     function New_Taipei(id){
+         switch(id){
+             case 1:
+                 $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x=新北"+id,
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_12.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };    
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                
+                                var len2=trip.length
+                                if(len2==0){
+                                     content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                 attachSecretMessage(marker[i],content,map) ;
+                                new_tai.push(marker[i]);
+                            }
+
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             new_tai11 = new MarkerClusterer(map, new_tai,mcOptions);
+                              
+                        }
+                 });
+                break;
+             case 2:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x=新北"+id,
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_13.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };    
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                     content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                 attachSecretMessage(marker[i],content,map) ;
+                                new_tai2.push(marker[i]); 
+                            }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             new_tai12 = new MarkerClusterer(map, new_tai2,mcOptions);
+                        }
+                 });
+                break;
+         }
+     }
+     function Taichung(id){
+         switch(id){
+             case 1:
+                 $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"台中1",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_14.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                tai.push(marker[i])
+                             }
+                              var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             tai11 = new MarkerClusterer(map, tai,mcOptions);
+                        }
+                 });
+                break;
+             case 2:
+                 $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"台中2",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_15.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                                var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                tai2.push(marker[i])
+                             }
+                              var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             tai12 = new MarkerClusterer(map, tai2,mcOptions);
+                        }
+                 });
+                break;
+         }
+     }
+     function kao(id){
+         switch(id){
+            case 1:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"1",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_16.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao1.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao21 = new MarkerClusterer(map, kao1,mcOptions);
+                        }
+                });
+                break;
+            case 2:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"2",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_17.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao2.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao22 = new MarkerClusterer(map, kao2,mcOptions);
+                        }
+                });
+                break;
+            case 3:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"3",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_18.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao3.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao23 = new MarkerClusterer(map, kao3,mcOptions);
+                        }
+                });
+                break;
+            case 4:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"4",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_19.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao4.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao24 = new MarkerClusterer(map, kao4,mcOptions);
+                        }
+                });
+                break;
+            case 5:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"5",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_20.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao5.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao25 = new MarkerClusterer(map, kao5,mcOptions);
+                        }
+                });
+                break;
+            case 6:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"6",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_21.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao6.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao26 = new MarkerClusterer(map, kao6,mcOptions);
+                        }
+                });
+                break;
+            case 7:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"8",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao7.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao27 = new MarkerClusterer(map, kao7,mcOptions);
+                        }
+                });
+                break;
+            case 8:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"9",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_3.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao8.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao28 = new MarkerClusterer(map, kao8,mcOptions);
+                        }
+                });
+                break;
+            case 9:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"10",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_4.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao9.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao29 = new MarkerClusterer(map, kao9,mcOptions);
+                        }
+                });
+                break;
+            case 10:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"11",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_5.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao10.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao30 = new MarkerClusterer(map, kao10,mcOptions);
+                        }
+                });
+                break;
+            case 11:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"12",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_6.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao11.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao31 = new MarkerClusterer(map, kao11,mcOptions);
+                        }
+                });
+                break;
+            case 12:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"13",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_7.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao12.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao32 = new MarkerClusterer(map, kao12,mcOptions);
+                        }
+                });
+                break;
+            case 13:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"14",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_8.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao13.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao33 = new MarkerClusterer(map, kao13,mcOptions);
+                        }
+                });
+                break;
+            case 14:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"15",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_9.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao14.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao34 = new MarkerClusterer(map, kao14,mcOptions);
+                        }
+                });
+                break;
+            case 15:
+                    $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel.php',
+                        data:"&x="+"18",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_10.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            
+                             for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span><span class=drisc>簡介:"+data[i].Description+"</span></div><div class=Info2><a onclick=Join_trip('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }   
+                                }
+                                attachSecretMessage(marker[i],content,map) ;
+                                kao15.push(marker[i]); 
+                             }
+                             var mcOptions = {gridSize:200,maxZoom:13 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             kao35 = new MarkerClusterer(map, kao15,mcOptions);
+                        }
+                });
+                break;
+         }
+     }
+     function gethotel(id){
+         console.log(id)
+         switch(id){
+             case 1:
+                $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel_All_hotel.php',
+                        data:"&x="+"hotel",
+                        success:function(data){
+                            console.log(data)
+                            var len=data.length;
+                            var image={
+                                url:'pin_20.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span></div><div class=Info2><a onclick=Join_trip2('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span></div><div class=Info2><a onclick=Join_trip2('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span></div><div class=Info2><a onclick=Join_trip2('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                    attachSecretMessage(marker[i],content,map) ;
+                                    hotel.push(marker[i]); 
+                                
+                            }
+                             var mcOptions = {gridSize:150,maxZoom:12 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             hotel2 = new MarkerClusterer(map, hotel,mcOptions);
+                        
+                        }
+                });
+                break;
+             case 2:
+             $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'Travel_All_hotel.php',
+                        data:"&x="+"motel",
+                        success:function(data){
+                            var len=data.length;
+                            var image={
+                                url:'pin_20.png',
+                                size: new google.maps.Size(10, 11),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 32)
+                            };
+                            for(var i=0;i<len;i++){
+                                  var lat=data[i].lat;
+                                  var lng=data[i].lng;
+                                  var label=data[i].name;
+                                  marker[i] = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat),lng: parseFloat(lng)},
+                                        map: map,
+                                        title: label,
+                                        icon:image
+                                });
+                               var len2=trip.length
+                                if(len2==0){
+                                    content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span></div><div class=Info2><a onclick=Join_trip2('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                }
+                                else{
+                                    for(var j=0;j<len2;j++){
+                                        if(trip[j]!=label){
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span></div><div class=Info2><a onclick=Join_trip2('"+label+"') id="+label+">加入我的旅程</a></div>"
+                                        }
+                                        else{
+                                            content="<div class=Info><span class=title>"+label+"</span><span class=add>地址:"+data[i].address+"</span></div><div class=Info2><a onclick=Join_trip2('"+label+"') id="+label+">已加入旅程</a></div>"
+                                        }
+                                    }
+                                }
+                                    attachSecretMessage(marker[i],content,map) ;
+                                    motel.push(marker[i]); 
+                            }
+                             var mcOptions = {gridSize:150,maxZoom:12 ,imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'};   
+                             motel2 = new MarkerClusterer(map, motel,mcOptions);
+                        
+                        }
+                });
+                break;
+         }
+
+     }
+      var bl=false;
+      function attachSecretMessage(marker, content,map){
+          var infowindow = new google.maps.InfoWindow({
+		    content: content ,
+		    size: new google.maps.Size(487, 194)
+	    });
+        google.maps.event.addListener(marker, 'click', function() {
+                if(bl){
+                    bl.close();
+                }
+                    bl=infowindow;
+                    infowindow.open(marker.get('map'), marker);
+	    });
+      }
+      function nextstep(){
+         if(trip.length>0&&trip.length<=40){
+             var travel=[]
+             var travel2=[]
+             for(var i=0;i<trip.length;i++){
+                 travel[i]={
+                     travel:trip[i]
+                 }
+             }
+             for(var i=0;i<trip2.length;i++){
+                 travel2[i]={
+                     travel:trip2[i]
+                 }
+             }
+             Cookies.set('travel',travel)
+              Cookies.set('travel2',travel2)
+             window.location.href="control_trip2.html";
+         }
+         else{
+             $.Notify({
+					caption: '錯誤',
+					content: '選擇數量太少或超過',
+					timeout:2000,
+					type: 'alert'
+				});
+         }
+      }
+      function Join_trip2(label){
+           var y=document.getElementById(label);
+           var i=document.getElementById(label).innerText;
+           var trip3=[];
+            if(i=="加入我的旅程"){
+                y.innerHTML="已加入旅程";
+                trip2.push(label)
+                var html="<a class='list' href='#' id=1"+label+"><div class='list-content'><span class='list-title'>"+label+"</span></div></a>";
+                document.getElementById("listview").innerHTML+=html;
+            }
+            else{
+                  y.innerHTML="加入我的旅程";
+                  var a=document.getElementById("1"+label).innerHTML=""
+                  var len=trip.length;
+                    for(var j=0;j<len;j++){
+                        if(trip[j]!=label){
+                            trip3.push(trip[j]);
+                        }
+                    }
+                    trip=[]
+                    trip=trip3
+            }
+      }
+      function Join_trip(label){
+          //console.log(label)
+           var y=document.getElementById(label);
+           var i=document.getElementById(label).innerText;
+           var trip3=[];
+           console.log(i)
+           if(i=="加入我的旅程"){
+                //console.log(label)
+                y.innerHTML="已加入旅程";
+                console.log(label)
+                trip.push(label)
+                var html="<a class='list' href='#' id=1"+label+"><div class='list-content'><span class='list-title'>"+label+"</span></div></a>";
+                document.getElementById("listview").innerHTML+=html;
+                console.log(html)
+           }
+           else{
+                y.innerHTML="加入我的旅程";
+                var b=document.getElementById('listview');
+                b.removeChild(document.getElementById("1"+label))
+                console.log(a)
+                var len=trip.length;
+                for(var j=0;j<len;j++){
+                    if(trip[j]!=label){
+                        trip3.push(trip[j]);
+                    }
+                }
+                trip=[]
+                trip=trip3
+           }
+      }
+      function check2(id){
+          var x=document.getElementById(id);
+          console.log(x.id)
+          switch(id){
+              case "place":
+                if(x.checked==true){
+                    GetActivtiy()
+                    document.getElementById("people").checked=false
+                    $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'GetPlace2.php',
+                        data:"&date="+Cookies.get('EndTime'),
+                        success:function(data){
+                            console.log(data)
+                            var activity2=document.getElementById("activity2")
+                            var html="";
+                            for(var i=0;i<data.length;i++){
+                                html+="<a class='list' href='#' id="+data[i].name+"> <div class='list-content' style=font-size:0.7rem> <span class='list-title listfont'>"+data[i].name+"</span><div class=rating data-role=rating data-value="+data[i].price+" data-static=true></div><span class='button primary' style='left:10%;' id=2"+data[i].name+" onclick=add('"+data[i].name+"')>新增<span></span></span></div></a>"
+                            }
+                            activity2.innerHTML=html;
+                            GetActivtiy()
+                        }
+                    });
+                }
+                else{
+                    closeSlide()
+                }
+                break;
+              case "people":
+                console.log("AA")
+                if(x.checked==true){
+                    GetActivtiy()
+                    document.getElementById("place").checked=false
+                    $.ajax({
+                        type:'post',
+                        dataType:"json",
+                        url:'GetActivity2.php',
+                        success:function(data){
+                            console.log(data)
+                            var activity2=document.getElementById("activity2")
+                            console.log(activity2)
+                            var html="";
+                            for(var i=0;i<data.length;i++){
+                                html+="<a class='list' href='#' id="+data[i].name+"> <div class='list-content' style=font-size:0.7rem> <span class='list-title listfont'>"+data[i].name+"</span><span class='button primary' id=2"+data[i].name+" style='left:70%;' onclick=add('"+data[i].name+"')>新增<span></span></span></div></a>"
+                            }
+                            activity2.innerHTML=html;
+                            GetActivtiy()
+                        }
+                    });
+                }
+                else{
+                    closeSlide()
+                }
+                break;
+          }
+      }
+      function add(id){
+        var trip4=[];
+        var x=document.getElementById("2"+id)
+        if(x.textContent=="新增"){
+            x.innerHTML="刪除"
+            x.style.background ="#ce352c"
+            x.style.border="#ce352c"
+            
+            trip.push(id)
+            var html="<a class='list' href='#' id=1"+id+"><div class='list-content'><span class='list-title'>"+id+"</span></div></a>";
+            document.getElementById("listview").innerHTML+=html;
+        }
+        else{
+            x.innerHTML="新增"
+            x.style.background ="#2086bf"
+            x.style.border="#2086bf"
+            var b=document.getElementById('listview');
+            b.removeChild(document.getElementById("1"+id))
+            var len=trip.length;
+            for(var j=0;j<len;j++){
+                if(trip[j]!=id){
+                    trip4.push(trip[j]);
+                }
+            }  
+            trip=[];
+            trip=trip4;    
+        }
+      }
+      function GetActivtiy(){
+         $("#right-charm").animate({right:'0'},"slow"); 
+      }
+     function closeSlide(){
+         $("#right-charm").animate({right:'-500px'},"slow");
+     }
+</script>
+</head>
+
+<body>
+    <div class="cell">
+        <div class="listview-outlook list" data-role="listview" id="listview">
+
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <div class="app-bar darcula" id="bar">
+        <ul class="app-bar-menu">
+            <li><a href="" class="dropdown-toggle">台北市</a>
+                <ul class="d-menu" data-role="dropdown">
+                    <li>
+                        <a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="公共藝術"><span class=check>公共藝術</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="戶外踏青"><span class=check>戶外踏青</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="宗教信仰"><span class=check>宗教信仰</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="春季活動"><span class=check>春季活動</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="單車遊蹤"><span class=check>單車遊蹤</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="養生溫泉"><span class=check>養生溫泉</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="歷史建築"><span class=check>歷史建築</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="親子共遊"><span class=check>親子共遊</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="藍色公路"><span class=check>藍色公路</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="藝文館所"><span class=check>藝文館所</a></li>
+                </ul>
+            </li>
+            <li><a href="" class="dropdown-toggle">新北市</a>
+                <ul class="d-menu" data-role="dropdown">
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="New1"><span class=check>室內</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="New2"><span class=check>室外</a></li>
+                </ul>
+            </li>
+            <li><a href="" class="dropdown-toggle">台中市</a>
+                <ul class="d-menu" data-role="dropdown">
+                   <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="Taichung"><span class=check>室內</a></li>
+                  <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="Taichung2"><span class=check>室外</a></li>
+                </ul>
+            </li>
+            <li><a href="" class="dropdown-toggle">高雄市</a>
+                <ul class="d-menu" data-role="dropdown">
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="文化"><span class=check>文化</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="生態"><span class=check>生態</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="古蹟"><span class=check>古蹟</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="廟宇"><span class=check>廟宇</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="藝術"><span class=check>藝術</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="小吃"><span class=check>小吃</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="國家風景區"><span class=check>國家風景區</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="休閒農場"><span class=check>休閒農場</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="溫泉"><span class=check>溫泉</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="自然風景"><span class=check>自然風景</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="遊憩"><span class=check>遊憩</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="體育健身"><span class=check>體育健身</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="觀光工廠"><span class=check>觀光工廠</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="都會公園"><span class=check>都會公園</a></li>
+                    <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="其他"><span class=check>其他</a></li>
+                </ul>
+            </li>
+             <li><a href="" class="dropdown-toggle">住宿</a>
+                <ul class="d-menu" data-role="dropdown">
+                   <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="旅館"><span class=check>旅館</a></li>
+                  <li><a><input type="checkbox" data-show="indeterminate" onclick="check(id)" id="民宿"><span class=check>民宿</a></li>
+                </ul>
+            </li>
+            <li><a href="" class="dropdown-toggle">推薦</a>
+                    <ul class="d-menu" data-role="dropdown">
+                        <li>
+                            <a><input type="checkbox" data-show="indeterminate" onclick="check2(id)" id="place"><span class=check>推薦地方</a></li>
+                        <li><a><input type="checkbox" data-show="indeterminate" onclick="check2(id)" id="people"><span class=check>推薦活動</a></li>
+                    </ul>
+            </li>
+        </ul>
+    </div>
+   <div class="tile-small bg-orange fg-white" data-role="tile" id="next_step" onclick="nextstep()">
+       <div class="tile-content iconic">
+            <span class="icon mif-files-empty" style="margin-top:-23px;"></span>
+                            <p style="margin-top:50px; margin-left:13px">下一步<p>
+                                
+       </div>
+    </div>
+     <div id="right-charm" class="charm right-side" style="opacity: 1; right: -500px; left: auto; top: 0px; bottom: 0px; width:15%;padding:25px">
+        <div>
+            <div class="listview-outlook list" data-role="listview" style="background-color:#FFF;overflow-y:scroll;height:900px;width:100%" id="activity2"  >
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

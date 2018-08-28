@@ -1,0 +1,119 @@
+﻿<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link href="css/metro-schemes.css" rel="stylesheet">
+    <link href="css/metro-responsive.css" rel="stylesheet">
+    <link href="css/metro.css" rel="stylesheet">
+    <link href="css/metro-icons.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="js/metro.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="liquidFillGauge.js" language="JavaScript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+    <script src="js.cookie.js"></script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Jhenghei", sans-serif;
+            background-color: #2e80ab;
+        }
+    </style>
+    <script>
+    $(document).ready(function() {
+        var member=Cookies.get('user');
+         var user=document.getElementById('member')
+         console.log(member)
+         var memberHtml="";
+         if(member!="test"){
+                memberHtml+="<span class='dropdown-toggle active-toggle'><span class=mif-user></span>"+member+ "</span><div class='app-bar-drop-container padding10 place-right no-margin-top block-shadow fg-dark' data-role=dropdown data-no-close=true style=width: 100px;> <ul class='unstyled-list fg-dark'>  <li><a href=# class='fg-white fg-hover-yellow'>變更密碼</a></li><li><a href=# class='fg-white fg-hover-yellow'>登出</a></li></ul></div>"
+         }
+         else{
+             memberHtml+="<span class='dropdown-toggle active-toggle'><span class=mif-user></span>試用者</span>"
+         }
+        user.innerHTML=memberHtml
+        var qrcode=parseInt(Cookies.get('qrcode'))
+        var Job=parseInt(Cookies.get('Job'))
+        
+        var x=document.getElementById('cell-content')
+        var html="<div class='row flex-just-center' style='margin-top:300px;'>"
+        for(var i=0;i<parseInt(qrcode);i++){
+            console.log(i)
+            if(i==0){
+                html+="<div id=qrcode class='padding20 bg-gray' style='height:340px;width:340px;'></div>"
+            }
+            else{
+                html+="<div id=qrcode"+i+" class='padding20 bg-gray' style='height:340px;width:340px;margin-left:2%;'></div>"
+            }
+        }
+        x.innerHTML=html
+        for(var i=0;i<qrcode;i++){
+            if(i==0){
+                $('#qrcode').qrcode({
+		            width:300,
+                    height:300,
+                    text	: "http://192.168.1.105:8080/main/DirctionMap.html?code="+Job+"&day=1"
+	            });
+                console.log("http://192.168.1.105:8080/main/DirctionMap.html?code="+Job+"&day=1")
+            }
+            else{
+                var str="#qrcode"+i
+                var day=i+1
+                $(str).qrcode({
+		            width:300,
+                    height:300,
+                    text	: "http://192.168.1.105:8080/main/DirctionMap.html?code="+Job+"&day="+day
+	            });
+            }
+        }
+        
+        
+        	
+    });
+    </script>
+</head>
+
+<body>
+    <div class="app-bar fixed-top bg-black darcula" data-role="appbar">
+        <a class="app-bar-element " href="index.html">天氣亂入輕旅行</a>
+        <ul class="app-bar-menu">
+            <li data-flexorderorigin="0" data-flexorder="1"><a href="index.html">今日天氣</a></li>
+            <li data-flexorderorigin="2" data-flexorder="3">
+                <a href="" class="dropdown-toggle">旅遊規劃</a>
+                <ul class="d-menu" data-role="dropdown">
+                    <li><a href="trip.html">自動規劃</a></li>
+                    <li><a href="control_trip.html">手動規劃</a></li>
+                     <li><a href="Member_trip.html">參考旅遊</a></li>
+                </ul>
+            </li>
+
+        </ul>
+        <div class="app-bar-element place-right active-container" id="member">
+            <span class="dropdown-toggle active-toggle "><span class="mif-cog"></span>試用者</span>
+
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="flex-grid " style="height:100%;">
+            <div class="row" style="height:100%">
+                <div class="cell auto-size" id="cell-content" style="background-color:#2e80ab;">
+                    <div class="row flex-just-center" style="margin-top:300px;">
+                        
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+
+</html>
